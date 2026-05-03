@@ -1,0 +1,39 @@
+# Documentation files (optional - keep if you want them in repo)
+# Uncomment to exclude:
+# *.md
+# *.txt
+
+# Firebase files (if not using Firebase hosting)
+firebase-debug.log
+.firebase/
+
+# Cleanup and test tools (not needed in production)
+cleanup-storage.html
+add-video-to-portfolio.html
+check-portfolio.html
+test-portfolio.html
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Node modules
+node_modules/

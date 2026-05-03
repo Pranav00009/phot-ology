@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - PHOTOLOGY</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- Background Glow -->
+        <div class="background-glow"></div>
+        
+        <!-- Login Container -->
+        <div class="login-container glass-card">
+            <div class="login-header">
+                <h1 class="logo">PHOTOLOGY</h1>
+                <p class="subtitle">Admin Panel</p>
+            </div>
+            
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="login-button">
+                    <span>Login to Dashboard</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <a href="../index.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Website
+                </a>
+            </div>
+        </div>
+        
+        <!-- Success Toast -->
+        <div class="error-toast" id="successToast" style="background: rgba(75, 255, 75, 0.15); border-color: rgba(75, 255, 75, 0.3);">
+            <i class="fas fa-check-circle" style="color: #4bff4b;"></i>
+            <span id="successMessage" style="color: #4bff4b;">Login successful!</span>
+        </div>
+    </div>
+    
+    <!-- Login Script -->
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const successToast = document.getElementById('successToast');
+        
+        // Check if already logged in
+        const isLoggedIn = localStorage.getItem('photology_admin_logged_in');
+        if (isLoggedIn === 'true') {
+            window.location.href = 'dashboard.html';
+        }
+        
+        // Fixed Admin Credentials
+        const ADMIN_EMAIL = 'pranavgiri81412@gmail.com';
+        const ADMIN_PASSWORD = 'Pranav4818';
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitButton = loginForm.querySelector('.login-button');
+            
+            // Disable button
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span>Logging in...</span><i class="fas fa-spinner fa-spin"></i>';
+            
+            // Validate credentials
+            setTimeout(() => {
+                if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                    // Store login state
+                    localStorage.setItem('photology_admin_logged_in', 'true');
+                    localStorage.setItem('photology_admin_email', email);
+                    
+                    // Show success message
+                    successToast.classList.add('show');
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    // Show error
+                    alert('❌ Invalid credentials!\n\nEmail: pranavgiri81412@gmail.com\nPassword: Pranav4818');
+                    
+                    // Re-enable button
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<span>Login to Dashboard</span><i class="fas fa-arrow-right"></i>';
+                }
+            }, 800);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHOTOLOGY - Cinematic Content Agency</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+</head>
+<body>
+    <!-- Global Main Wrapper with Cinematic Glow Background -->
+    <div class="main-wrapper">
+        <!-- Top Status Bar -->
+        <div class="status-bar">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">Open to work</span>
+            </div>
+            <a href="#contact" class="status-cta">Contact Us</a>
+        </div>
+
+        <!-- EDITORIAL HERO — SELF PORTRAIT STYLE -->
+    <section id="home" class="editorial-hero">
+        <!-- Dark base -->
+        <div class="hero-bg-dark"></div>
+        <div class="hero-large-clock" id="heroLargeClock">12:00:00 AM</div>
+        
+        <!-- Warm cinematic glow -->
+        <div class="hero-cinematic-glow"></div>
+
+        <!-- Full-bleed subject image (background) -->
+        <div class="hero-image-anchor">
+            <img src="assets/images/me.png" alt="PHOTOLOGY Creative Director" class="hero-subject-image">
+        </div>
+        
+        <!-- All text/UI layers over image -->
+        <div class="hero-editorial-content">
+
+            <!-- TOP: Three spaced keyword nav (CREATIVE · CINEMATIC · AGENCY) -->
+            <div class="editorial-label-pill">
+                <span class="pill-dot"></span>
+                <span>CINEMATIC CONTENT AGENCY</span>
+            </div>
+
+            <!-- Main heading bottom-left: PHOTOLOGY. -->
+            <h1 class="editorial-main-heading">
+                <span class="heading-line-white">PHOTO</span>
+                <span class="heading-line-gold">LOGY.</span>
+            </h1>
+
+            <!-- Small italic label under heading -->
+            <p class="editorial-subtitle">cinematic reels &nbsp;/&nbsp; video editing &nbsp;/&nbsp; Marketing</p>
+
+            <!-- Thin gold line under subtitle -->
+            <div class="editorial-divider"></div>
+
+            <!-- Hashtag pill mid-right (like #SOFTGREEN) -->
+            <div class="hashtag-tag">#CINEMATIC</div>
+
+            <!-- Contact pills: left side, mid area -->
+            <div class="editorial-contact-grid">
+                <a href="mailto:pranavgiri81412@gmail.com" class="contact-pill-minimal">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                </a>
+                <a href="https://instagram.com/photology_.009" target="_blank" class="contact-pill-minimal">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+                <a href="tel:+919924945660" class="contact-pill-minimal">
+                    <i class="fas fa-phone"></i>
+                    <span>Phone</span>
+                </a>
+                <div class="contact-pill-minimal">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Surat, Gujarat</span>
+                </div>
+            </div>
+
+
+
+            <!-- CTA Button: bottom left -->
+            <a href="#contact" class="editorial-cta-button">
+                <span>Get Your First Reel</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+
+            <!-- Brand credit bottom-right: "creative" + "PORTFOLIO." -->
+            <div class="micro-label creative-direction">premium</div>
+            <div class="micro-label visual-storytelling">QUALITY</div>
+
+            <!-- Live clock bg -->
+            <div class="bg-clock" id="bgClock">00:00:00</div>
+        </div>
+    </section>
+
+    <!-- Bottom Floating Navigation (Outside hero section) -->
+    <nav class="bottom-nav" id="bottomNav">
+        <!-- Sliding active pill -->
+        <div class="nav-indicator"></div>
+        <!-- Ambient glow that follows active item -->
+        <div class="nav-ambient-glow"></div>
+
+        <a href="#home" class="nav-item active">
+            <div class="nav-ripple"></div>
+            <div class="nav-glow-orb"></div>
+            <div class="nav-icon-wrap">
+                <i class="fas fa-house-chimney"></i>
+            </div>
+            <span class="nav-label">Home</span>
+            <div class="nav-active-dot"></div>
+        </a>
+        <a href="#services" class="nav-item">
+            <div class="nav-ripple"></div>
+            <div class="nav-glow-orb"></div>
+            <div class="nav-icon-wrap">
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </div>
+            <span class="nav-label">Services</span>
+            <div class="nav-active-dot"></div>
+        </a>
+        <a href="#portfolio" class="nav-item">
+            <div class="nav-ripple"></div>
+            <div class="nav-glow-orb"></div>
+            <div class="nav-icon-wrap">
+                <i class="fas fa-film"></i>
+            </div>
+            <span class="nav-label">Portfolio</span>
+            <div class="nav-active-dot"></div>
+        </a>
+        <a href="#pricing" class="nav-item">
+            <div class="nav-ripple"></div>
+            <div class="nav-glow-orb"></div>
+            <div class="nav-icon-wrap">
+                <i class="fas fa-gem"></i>
+            </div>
+            <span class="nav-label">Pricing</span>
+            <div class="nav-active-dot"></div>
+        </a>
+        <a href="#contact" class="nav-item">
+            <div class="nav-ripple"></div>
+            <div class="nav-glow-orb"></div>
+            <div class="nav-icon-wrap">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+            <span class="nav-label">Contact</span>
+            <div class="nav-active-dot"></div>
+        </a>
+    </nav>
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="glass-card stat-card fade-in">
+                    <h3 class="stat-number">50k+</h3>
+                    <p class="stat-label">Projects</p>
+                </div>
+                <div class="glass-card stat-card fade-in">
+                    <h3 class="stat-number">1M+</h3>
+                    <p class="stat-label">Views Generated</p>
+                </div>
+                <div class="glass-card stat-card fade-in">
+                    <h3 class="stat-number">50+</h3>
+                    <p class="stat-label">Clients</p>
+                </div>
+                <div class="glass-card stat-card fade-in">
+                    <h3 class="stat-number">3.5+</h3>
+                    <p class="stat-label">Years Experience</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="tag">What We Do</span>
+                <h2 class="section-title">Our Services</h2>
+            </div>
+            
+            <div class="services-grid">
+                <div class="glass-card service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3 class="service-title">Content Creation</h3>
+                    <p class="service-description">Cinematic reels, product shoots, and brand videos that captivate your audience</p>
+                </div>
+                
+                <div class="glass-card service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3 class="service-title">Video Editing</h3>
+                    <p class="service-description">High-end edits, color grading, and seamless transitions for premium content</p>
+                </div>
+                
+                <div class="glass-card service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="service-title">Instagram Growth</h3>
+                    <p class="service-description">Strategic planning, consistent posting, and audience engagement strategies</p>
+                </div>
+                
+                <div class="glass-card service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="service-title">Influencer Marketing</h3>
+                    <p class="service-description">Collaboration management, outreach, and full campaign handling</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="tag">Our Work</span>
+                <h2 class="section-title">Portfolio</h2>
+            </div>
+            
+            <div class="portfolio-grid" id="portfolioGrid">
+                <!-- Portfolio items will be loaded dynamically from localStorage -->
+                <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Loading portfolio...</p>
+                </div>
+            </div>
+            
+            <!-- View More Button -->
+            <div class="portfolio-cta">
+                <a href="https://instagram.com/photology_.009" target="_blank" rel="noopener noreferrer" class="view-more-button">
+                    <span>View More on Instagram</span>
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reel Modal -->
+    <div class="reel-modal" id="reelModal">
+        <div class="modal-content glass-card">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="reel-embed" id="reelEmbed"></div>
+        </div>
+    </div>
+
+    <!-- About Section - Editorial Style -->
+    <section id="about" class="editorial-about">
+        <div class="container">
+            <div class="about-grid-editorial">
+                <!-- Left: Typography & Story -->
+                <div class="about-story fade-in">
+                    <div class="editorial-meta">
+                        <span class="editorial-line"></span>
+                        <span class="editorial-tag-text">The Vision</span>
+                    </div>
+                    <h2 class="editorial-title-large">Who <br><span class="italic-gold">We Are</span></h2>
+                    
+                    <div class="story-content">
+                        <p class="lead-text">
+                            PHOTOLOGY is a cinematic content agency focused on helping brands grow through high-quality reels and visual storytelling.
+                        </p>
+                        <p class="body-text">
+                            We combine artistic vision with strategic marketing to create content that doesn't just look good—it performs. Our team specializes in crafting premium, cinematic content that captures attention, builds engagement, and drives real business results for brands across industries.
+                        </p>
+                    </div>
+                    
+                    <div class="about-stats-inline">
+                        <div class="stat-item-inline">
+                            <span class="stat-num">50+</span>
+                            <span class="stat-lbl">Brands Elevated</span>
+                        </div>
+                        <div class="stat-item-inline">
+                            <span class="stat-num">1M+</span>
+                            <span class="stat-lbl">Views Generated</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Visual Composition -->
+                <div class="about-visuals fade-in">
+                    <div class="visual-backdrop"></div>
+                    <div class="visual-main-wrapper">
+                        <img src="assets/images/Red Beige Minimal Simple Typographic Chic Logo.jpg" alt="PHOTOLOGY Logo" class="main-about-img">
+                        
+                        <!-- Floating Glass Element -->
+                        <div class="floating-glass-badge">
+                            <i class="fas fa-film"></i>
+                            <div class="badge-text">
+                                <span>Est. 2020</span>
+                                <strong>Cinematography</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="tag">Investment</span>
+                <h2 class="section-title">Pricing Plans</h2>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="glass-card pricing-card fade-in">
+                    <h3 class="pricing-title">Starter</h3>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 10 Reels</li>
+                        <li><i class="fas fa-check"></i> Basic Editing</li>
+                        <li><i class="fas fa-check"></i> Color Grading</li>
+                        <li><i class="fas fa-check"></i> Music & SFX</li>
+                    </ul>
+                    <a href="#contact" class="pricing-button">Contact Now</a>
+                </div>
+                
+                <div class="glass-card pricing-card featured fade-in">
+                    <div class="featured-badge">Popular</div>
+                    <h3 class="pricing-title">Growth</h3>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 20 Reels</li>
+                        <li><i class="fas fa-check"></i> Advanced Editing</li>
+                        <li><i class="fas fa-check"></i> Content Strategy</li>
+                        <li><i class="fas fa-check"></i> Posting Schedule</li>
+                        <li><i class="fas fa-check"></i> Analytics Report</li>
+                    </ul>
+                    <a href="#contact" class="pricing-button">Contact Now</a>
+                </div>
+                
+                <div class="glass-card pricing-card fade-in">
+                    <h3 class="pricing-title">Premium</h3>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Full Shoot + Reels</li>
+                        <li><i class="fas fa-check"></i> Premium Editing</li>
+                        <li><i class="fas fa-check"></i> Influencer Marketing</li>
+                        <li><i class="fas fa-check"></i> Campaign Management</li>
+                        <li><i class="fas fa-check"></i> Dedicated Manager</li>
+                    </ul>
+                    <a href="#contact" class="pricing-button">Contact Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="tag">Get In Touch</span>
+                <h2 class="section-title">Contact Us</h2>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info fade-in">
+                    <div class="glass-card contact-card">
+                        <h3>Let's Create Something Amazing</h3>
+                        <p>Ready to elevate your brand with cinematic content? Reach out to us today.</p>
+                        
+                        <div class="contact-buttons">
+                            <a href="https://wa.me/919924945660" class="contact-btn whatsapp-btn" target="_blank">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>WhatsApp</span>
+                            </a>
+                            <a href="https://instagram.com/photology_.009" class="contact-btn instagram-btn" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form-wrapper fade-in">
+                    <form class="glass-card contact-form" id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="phone" placeholder="Your Phone Number" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="cta-button">
+                            <span>Send Message</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="notification-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="notification-content">
+            <h4 class="notification-title">Message Sent!</h4>
+            <p class="notification-message">We'll get back to you soon.</p>
+        </div>
+        <button class="notification-close" id="notificationClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">PHOTOLOGY</div>
+                <p class="footer-text">Cinematic Content Agency</p>
+                
+                <!-- Social Links -->
+                <div class="footer-social">
+                    <a href="https://instagram.com/photology_.009" class="social-link" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/919924945660" class="social-link" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="mailto:pranavgiri81412@gmail.com" class="social-link" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+                
+                <!-- Admin Panel Button - Premium Glass Design -->
+                <a href="admin/login.html" class="admin-panel-button">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Admin Panel</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                
+                <!-- Copyright -->
+                <p class="footer-copyright">&copy; 2026 PHOTOLOGY. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Live Clock Background -->
+    <script>
+        function updateClock() {
+            const now = new Date();
+            let h = now.getHours();
+            let m = now.getMinutes();
+            let s = now.getSeconds();
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            
+            h = h % 12;
+            h = h ? h : 12; // the hour '0' should be '12'
+            
+            h = h < 10 ? "0" + h : h;
+            m = m < 10 ? "0" + m : m;
+            s = s < 10 ? "0" + s : s;
+            
+            const timeString = `${h}:${m}:${s}`;
+            
+            const clockElement = document.getElementById("bgClock");
+            if (clockElement) {
+                clockElement.innerText = timeString;
+            }
+            
+            const largeClockElement = document.getElementById("heroLargeClock");
+            if (largeClockElement) {
+                largeClockElement.innerText = timeString;
+            }
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+    
+    <!-- Firebase Contact Form Handler -->
+    <script>
+        // Contact Form Submission to Firebase Realtime Database
+        const contactForm = document.getElementById('contactForm');
+        
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const message = document.getElementById('message').value;
+                const submitButton = contactForm.querySelector('.cta-button');
+                
+                // Disable button during submission
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span>Sending...</span>';
+                
+                try {
+                    // Generate unique ID
+                    const contactId = Date.now();
+                    
+                    // Save to Realtime Database
+                    await database.ref('contacts/' + contactId).set({
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        message: message,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP,
+                        status: 'new',
+                        date: new Date().toISOString()
+                    });
+                    
+                    // Show success notification
+                    showNotification('Message Sent!', `Thank you ${name}! We'll get back to you soon.`);
+                    
+                    // Reset form
+                    contactForm.reset();
+                    
+                } catch (error) {
+                    console.error('Error saving contact:', error);
+                    showNotification('Error!', 'Sorry, there was an error. Please try again.', 'error');
+                }
+                
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
+            });
+        }
+        
+        // Notification System
+        function showNotification(title, message, type = 'success') {
+            const toast = document.getElementById('notificationToast');
+            const toastTitle = toast.querySelector('.notification-title');
+            const toastMessage = toast.querySelector('.notification-message');
+            const toastIcon = toast.querySelector('.notification-icon i');
+            
+            // Update content
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            // Update icon and color based on type
+            if (type === 'error') {
+                toastIcon.className = 'fas fa-exclamation-circle';
+                toast.classList.add('error');
+            } else {
+                toastIcon.className = 'fas fa-check-circle';
+                toast.classList.remove('error');
+            }
+            
+            // Show notification
+            toast.classList.add('show');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+        
+        function hideNotification() {
+            const toast = document.getElementById('notificationToast');
+            toast.classList.remove('show');
+        }
+        
+        // Close button handler
+        const notificationClose = document.getElementById('notificationClose');
+        if (notificationClose) {
+            notificationClose.addEventListener('click', hideNotification);
+        }
+    </script>
+    </div>
+    <!-- End Main Wrapper -->
+</body>
+</html>

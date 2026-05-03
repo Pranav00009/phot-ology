@@ -1,0 +1,13 @@
+# Icons Folder
+
+Optional: Place custom icons here if not using Font Awesome.
+
+## Recommended:
+- SVG format for scalability
+- PNG with transparent background
+- Consistent style across all icons
+- Optimized file sizes
+
+## Current Setup:
+The website uses Font Awesome 6.4.0 for icons.
+Custom icons can be added here if needed.

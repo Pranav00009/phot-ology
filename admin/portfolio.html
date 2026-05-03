@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - PHOTOLOGY Admin</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-logo">PHOTOLOGY</h1>
+                <p class="sidebar-subtitle">Admin Panel</p>
+            </div>
+            
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="messages.html" class="nav-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="portfolio.html" class="nav-link active">
+                            <i class="fas fa-images"></i>
+                            <span>Portfolio</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="media-upload.html" class="nav-link">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Media Upload</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pricing.html" class="nav-link">
+                            <i class="fas fa-tag"></i>
+                            <span>Pricing</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <button class="logout-button" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="page-title">Portfolio Management</h1>
+            </div>
+            
+            <!-- Portfolio Items -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Portfolio Items</h2>
+                    <button class="add-button" onclick="openAddModal()">
+                        <i class="fas fa-plus"></i>
+                        <span>Add New Item</span>
+                    </button>
+                </div>
+                
+                <div class="stats-grid" id="portfolioGrid">
+                    <!-- Portfolio items will be loaded here -->
+                    <div class="glass-card" style="padding: 3rem; text-align: center;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">Loading portfolio...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="portfolioModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Portfolio Item</h2>
+                <button class="close-modal" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="modal-form" id="portfolioForm">
+                <input type="hidden" id="itemIndex">
+                
+                <div class="form-group">
+                    <label for="instagramUrl">Instagram Post/Reel URL</label>
+                    <input type="url" id="instagramUrl" placeholder="https://www.instagram.com/p/..." required>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Paste the full Instagram post or reel URL
+                    </p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageUrl">Thumbnail Image URL (Optional)</label>
+                    <input type="url" id="imageUrl" placeholder="assets/images/portfolio-1.jpg">
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Leave empty to use default placeholder
+                    </p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Item
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="closeModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Check authentication
+        const isLoggedIn = localStorage.getItem('photology_admin_logged_in');
+        if (isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('photology_admin_logged_in');
+            localStorage.removeItem('photology_admin_email');
+            window.location.href = 'login.html';
+        });
+        
+        // Portfolio data (stored in localStorage)
+        let portfolioItems = JSON.parse(localStorage.getItem('portfolio_items')) || [
+            { url: 'https://www.instagram.com/p/DU9yl_nCi16/', image: 'assets/images/portfolio-1.jpg' },
+            { url: 'https://www.instagram.com/reel/DV8vR73CL9a/', image: 'assets/images/portfolio-2.jpg' },
+            { url: 'https://www.instagram.com/reel/example3/', image: 'assets/images/portfolio-3.jpg' },
+            { url: 'https://www.instagram.com/reel/example4/', image: 'assets/images/portfolio-4.jpg' },
+            { url: 'https://www.instagram.com/reel/example5/', image: 'assets/images/portfolio-5.jpg' },
+            { url: 'https://www.instagram.com/reel/example6/', image: 'assets/images/portfolio-6.jpg' }
+        ];
+        
+        function displayPortfolio() {
+            const grid = document.getElementById('portfolioGrid');
+            
+            grid.innerHTML = portfolioItems.map((item, index) => `
+                <div class="glass-card" style="padding: 0; overflow: hidden;">
+                    <div style="position: relative; padding-bottom: 100%; background: var(--secondary-bg);">
+                        <img src="../${item.image}" alt="Portfolio ${index + 1}" 
+                             style="position: absolute; width: 100%; height: 100%; object-fit: cover;"
+                             onerror="this.src='https://via.placeholder.com/400x400/111111/D4AF37?text=Portfolio+${index + 1}'">
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem; word-break: break-all;">
+                            <i class="fab fa-instagram"></i> ${item.url}
+                        </p>
+                        <div class="action-buttons">
+                            <button class="btn-edit" onclick="editItem(${index})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-delete" onclick="deleteItem(${index})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add Portfolio Item';
+            document.getElementById('portfolioForm').reset();
+            document.getElementById('itemIndex').value = '';
+            document.getElementById('portfolioModal').classList.add('active');
+        }
+        
+        function editItem(index) {
+            const item = portfolioItems[index];
+            document.getElementById('modalTitle').textContent = 'Edit Portfolio Item';
+            document.getElementById('itemIndex').value = index;
+            document.getElementById('instagramUrl').value = item.url;
+            document.getElementById('imageUrl').value = item.image;
+            document.getElementById('portfolioModal').classList.add('active');
+        }
+        
+        function deleteItem(index) {
+            if (!confirm('Are you sure you want to delete this portfolio item?')) return;
+            
+            portfolioItems.splice(index, 1);
+            localStorage.setItem('portfolio_items', JSON.stringify(portfolioItems));
+            displayPortfolio();
+            
+            // Trigger storage event for main website
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'portfolio_items',
+                newValue: JSON.stringify(portfolioItems)
+            }));
+        }
+        
+        function closeModal() {
+            document.getElementById('portfolioModal').classList.remove('active');
+        }
+        
+        document.getElementById('portfolioForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const index = document.getElementById('itemIndex').value;
+            const url = document.getElementById('instagramUrl').value;
+            const image = document.getElementById('imageUrl').value || `assets/images/portfolio-${portfolioItems.length + 1}.jpg`;
+            
+            if (index === '') {
+                // Add new
+                portfolioItems.push({ url, image });
+            } else {
+                // Edit existing
+                portfolioItems[index] = { url, image };
+            }
+            
+            localStorage.setItem('portfolio_items', JSON.stringify(portfolioItems));
+            displayPortfolio();
+            closeModal();
+            
+            // Trigger storage event for main website
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'portfolio_items',
+                newValue: JSON.stringify(portfolioItems)
+            }));
+            
+            alert('Portfolio updated! Refresh the main website to see changes.');
+        });
+        
+        function updateWebsite() {
+            // This would update the actual website HTML
+            // For now, just show a message
+            console.log('Portfolio updated:', portfolioItems);
+        }
+        
+        // Load portfolio on page load
+        displayPortfolio();
+    </script>
+</body>
+</html>

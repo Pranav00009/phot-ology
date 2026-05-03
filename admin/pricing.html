@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - PHOTOLOGY Admin</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-logo">PHOTOLOGY</h1>
+                <p class="sidebar-subtitle">Admin Panel</p>
+            </div>
+            
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="messages.html" class="nav-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="media-upload.html" class="nav-link">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Media Upload</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pricing.html" class="nav-link active">
+                            <i class="fas fa-tag"></i>
+                            <span>Pricing</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <button class="logout-button" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="page-title">Pricing Management</h1>
+                <p class="page-subtitle">Update your pricing plans</p>
+            </div>
+            
+            <!-- Pricing Plans -->
+            <div class="content-section">
+                <div class="stats-grid" id="pricingGrid">
+                    <!-- Pricing cards will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Edit Modal -->
+    <div class="modal" id="pricingModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Pricing Plan</h2>
+                <button class="close-modal" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="modal-form" id="pricingForm">
+                <input type="hidden" id="planIndex">
+                
+                <div class="form-group">
+                    <label for="planName">Plan Name</label>
+                    <input type="text" id="planName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="planFeatures">Features (one per line)</label>
+                    <textarea id="planFeatures" rows="6" required></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="closeModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Check authentication
+        const isLoggedIn = localStorage.getItem('photology_admin_logged_in');
+        if (isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('photology_admin_logged_in');
+            localStorage.removeItem('photology_admin_email');
+            window.location.href = 'login.html';
+        });
+        
+        // Pricing data
+        let pricingPlans = JSON.parse(localStorage.getItem('pricing_plans')) || [
+            {
+                name: 'Starter',
+                features: ['10 Reels', 'Basic Editing', 'Color Grading', 'Music & SFX'],
+                featured: false
+            },
+            {
+                name: 'Growth',
+                features: ['20 Reels', 'Advanced Editing', 'Content Strategy', 'Posting Schedule', 'Analytics Report'],
+                featured: true
+            },
+            {
+                name: 'Premium',
+                features: ['Full Shoot + Reels', 'Premium Editing', 'Influencer Marketing', 'Campaign Management', 'Dedicated Manager'],
+                featured: false
+            }
+        ];
+        
+        function displayPricing() {
+            const grid = document.getElementById('pricingGrid');
+            
+            grid.innerHTML = pricingPlans.map((plan, index) => `
+                <div class="glass-card" style="padding: 2rem; ${plan.featured ? 'border: 2px solid var(--gold);' : ''}">
+                    ${plan.featured ? '<div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), var(--orange)); color: #000; padding: 0.4rem 1rem; border-radius: 50px; font-weight: 700; font-size: 0.75rem;">POPULAR</div>' : ''}
+                    <h3 style="font-family: Poppins; font-size: 1.5rem; font-weight: 700; color: var(--gold); margin-bottom: 1.5rem; text-align: center;">
+                        ${plan.name}
+                    </h3>
+                    <ul style="list-style: none; margin-bottom: 2rem;">
+                        ${plan.features.map(f => `
+                            <li style="padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-secondary); display: flex; align-items: center; gap: 0.75rem;">
+                                <i class="fas fa-check" style="color: var(--gold);"></i>
+                                ${f}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button class="btn-edit" onclick="editPlan(${index})" style="width: 100%;">
+                        <i class="fas fa-edit"></i> Edit Plan
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function editPlan(index) {
+            const plan = pricingPlans[index];
+            document.getElementById('planIndex').value = index;
+            document.getElementById('planName').value = plan.name;
+            document.getElementById('planFeatures').value = plan.features.join('\n');
+            document.getElementById('pricingModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('pricingModal').classList.remove('active');
+        }
+        
+        document.getElementById('pricingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const index = document.getElementById('planIndex').value;
+            const name = document.getElementById('planName').value;
+            const features = document.getElementById('planFeatures').value.split('\n').filter(f => f.trim());
+            
+            pricingPlans[index].name = name;
+            pricingPlans[index].features = features;
+            
+            localStorage.setItem('pricing_plans', JSON.stringify(pricingPlans));
+            displayPricing();
+            closeModal();
+            
+            // Trigger storage event for main website
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'pricing_plans',
+                newValue: JSON.stringify(pricingPlans)
+            }));
+            
+            alert('Pricing updated! Refresh the main website to see changes.');
+        });
+        
+        // Load pricing on page load
+        displayPricing();
+    </script>
+</body>
+</html>

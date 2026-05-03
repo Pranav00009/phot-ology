@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Upload - PHOTOLOGY Admin</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- LocalForage and SortableJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        .sortable-ghost {
+            opacity: 0.4;
+            transform: scale(0.95);
+        }
+        .media-item {
+            cursor: grab;
+        }
+        .media-item:active {
+            cursor: grabbing;
+        }
+        
+        select option {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .upload-zone {
+            border: 2px dashed rgba(212, 175, 55, 0.5);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        
+        .upload-zone.dragover {
+            border-color: var(--orange);
+            background: rgba(255, 140, 66, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-hint {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .media-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .media-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: rgba(0, 0, 0, 0.3);
+            display: block;
+        }
+        
+        .media-preview-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .video-play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(212, 175, 55, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+            pointer-events: auto;
+        }
+        
+        .video-play-overlay:hover {
+            background: var(--gold);
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+        
+        .video-play-overlay i {
+            color: #000;
+            font-size: 1.5rem;
+            margin-left: 4px;
+        }
+        
+        .video-play-overlay.playing i {
+            margin-left: 0;
+        }
+        
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 1rem 0.8rem 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 3;
+        }
+        
+        .media-preview-container:hover .video-controls {
+            opacity: 1;
+        }
+        
+        .video-controls.show {
+            opacity: 1;
+        }
+        
+        .video-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .video-progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+        
+        .video-progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+        }
+        
+        .video-controls-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .video-control-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.3rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-control-btn:hover {
+            color: var(--gold);
+            transform: scale(1.1);
+        }
+        
+        .video-time {
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .video-volume-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+        
+        .video-volume-slider {
+            width: 60px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .video-volume-fill {
+            height: 100%;
+            background: var(--gold);
+            border-radius: 2px;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+        
+        .status-text {
+            color: #D4AF37;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .status-text.complete {
+            color: #00ff88;
+        }
+        
+        .status-text.error {
+            color: #ff4b4b;
+        }
+        
+        .media-info {
+            padding: 1rem;
+        }
+        
+        .media-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .media-url {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            word-break: break-all;
+            margin-bottom: 0.5rem;
+        }
+        
+        .media-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .copy-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: var(--gold);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(212, 175, 55, 0.25);
+        }
+        
+        .delete-media-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 75, 75, 0.15);
+            border: 1px solid rgba(255, 75, 75, 0.3);
+            border-radius: 8px;
+            color: #ff4b4b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-media-btn:hover {
+            background: rgba(255, 75, 75, 0.25);
+        }
+        
+        .video-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-logo">PHOTOLOGY</h1>
+                <p class="sidebar-subtitle">Admin Panel</p>
+            </div>
+            
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="messages.html" class="nav-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="media-upload.html" class="nav-link active">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Media Upload</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pricing.html" class="nav-link">
+                            <i class="fas fa-tag"></i>
+                            <span>Pricing</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <button class="logout-button" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="page-title">Media Upload</h1>
+                <p class="page-subtitle">Upload files to <code style="background:rgba(212,175,55,0.15);padding:2px 6px;border-radius:4px;color:var(--gold)">assets/</code> — committed to GitHub for live site</p>
+                <p id="serverBadge" style="margin-top:0.5rem;font-size:0.85rem;font-weight:600">🔄 Checking server…</p>
+            </div>
+            
+            <!-- Upload Zone -->
+            <div class="content-section">
+                <div class="glass-card" style="padding: 2rem;">
+                    <div class="upload-zone" id="uploadZone">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <p class="upload-text">Drag & Drop files here</p>
+                        <p class="upload-hint">or click to browse</p>
+                        <p class="upload-hint" style="margin-top: 1rem;">
+                            <i class="fas fa-info-circle"></i> 
+                            Images &amp; Videos — JPG, PNG, MP4, MOV (Max 500MB)
+                        </p>
+                        <p class="upload-hint" style="margin-top: 0.5rem; color: #4bff4b;">
+                            <i class="fas fa-server"></i> 
+                            When server runs: files save physically to <strong>assets/</strong>
+                        </p>
+                        <input type="file" id="fileInput" class="file-input" accept="image/*,video/*" multiple>
+                    </div>
+                    
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    
+                    <div id="uploadStatus" style="margin-top: 1rem; text-align: center; color: var(--gold); font-weight: 600;"></div>
+                </div>
+            </div>
+            
+            <!-- Add Asset by Path (GitHub Pages Workflow) -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">📁 Add Asset File to Portfolio</h2>
+                </div>
+                
+                <div class="glass-card" style="padding: 2rem;">
+                    <!-- GitHub workflow guide -->
+                    <div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;">
+                        <p style="color:var(--gold);font-weight:700;margin-bottom:0.8rem;"><i class="fas fa-github"></i> GitHub Pages Workflow</p>
+                        <ol style="color:var(--text-secondary);font-size:0.85rem;line-height:2;padding-left:1.5rem;">
+                            <li>Add your file to <code style="color:var(--gold)">assets/videos/</code> or <code style="color:var(--gold)">assets/images/</code> folder</li>
+                            <li>Commit &amp; push to GitHub</li>
+                            <li>Enter the file path below (e.g. <code style="color:var(--gold)">assets/videos/my-reel.mp4</code>)</li>
+                            <li>Click <strong style="color:var(--gold)">Add to Portfolio</strong> — saves to <code>assets/media.json</code></li>
+                            <li>Commit &amp; push <code style="color:var(--gold)">assets/media.json</code> to GitHub</li>
+                            <li>✅ Live site will show the new media automatically</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="display: grid; gap: 1rem;">
+                        <div class="form-group">
+                            <label style="color: var(--text-primary); font-weight: 600; display: block; margin-bottom: 0.5rem;">
+                                File Path (relative to project root)
+                            </label>
+                            <input type="text" id="localFilePath" 
+                                   placeholder="assets/videos/my-reel.mp4" 
+                                   style="width: 100%; padding: 0.9rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-family: 'Courier New', monospace;">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="color: var(--text-primary); font-weight: 600; display: block; margin-bottom: 0.5rem;">
+                                File Type
+                            </label>
+                            <select id="localFileType" 
+                                    style="width: 100%; padding: 0.9rem; background: rgba(20,20,20,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff;">
+                                <option value="video/mp4">Video (MP4)</option>
+                                <option value="video/quicktime">Video (MOV)</option>
+                                <option value="image/jpeg">Image (JPG/JPEG)</option>
+                                <option value="image/png">Image (PNG)</option>
+                                <option value="image/webp">Image (WebP)</option>
+                            </select>
+                        </div>
+                        
+                        <button onclick="addLocalFile()" 
+                                style="padding: 1rem 2rem; background: linear-gradient(135deg, #D4AF37, #FF8C42); border: none; border-radius: 12px; color: #000; font-weight: 700; cursor: pointer; font-size: 1rem;">
+                            <i class="fas fa-plus"></i> Add to Portfolio
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Uploaded Media -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Portfolio Media</h2>
+                    <button class="add-button" onclick="refreshMedia()">
+                        <i class="fas fa-sync"></i>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+                
+                <div class="media-grid" id="mediaGrid">
+                    <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">Loading media...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="error-toast" id="successToast" style="background: rgba(75, 255, 75, 0.15); border-color: rgba(75, 255, 75, 0.3);">
+        <i class="fas fa-check-circle" style="color: #4bff4b;"></i>
+        <span id="successMessage" style="color: #4bff4b;">File uploaded successfully!</span>
+    </div>
+    
+    <script>
+        // ============================================================
+        // PHOTOLOGY ADMIN — MEDIA MANAGER
+        // Upload → assets/videos or assets/images (via local server)
+        // All metadata saved to assets/media.json (committed to GitHub)
+        // ============================================================
+
+        // Auth check
+        if (localStorage.getItem('photology_admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('photology_admin_logged_in');
+            localStorage.removeItem('photology_admin_email');
+            window.location.href = 'login.html';
+        });
+
+        // ── DOM refs ──────────────────────────────────────────────
+        const uploadZone   = document.getElementById('uploadZone');
+        const fileInput    = document.getElementById('fileInput');
+        const progressBar  = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const mediaGrid    = document.getElementById('mediaGrid');
+
+        let serverOnline = false;
+
+        // Check if local server is running
+        async function checkServer() {
+            try {
+                const r = await fetch('/api/media', { signal: AbortSignal.timeout(1500) });
+                serverOnline = r.ok;
+            } catch { serverOnline = false; }
+            const badge = document.getElementById('serverBadge');
+            if (badge) {
+                badge.textContent = serverOnline ? '🟢 Local Server Online — Files save to assets/' : '🔴 Server Offline — Files save to browser storage';
+                badge.style.color  = serverOnline ? '#4bff4b' : '#ff8c42';
+            }
+        }
+
+        // ── Upload Zone ───────────────────────────────────────────
+        uploadZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', e => handleFiles(Array.from(e.target.files)));
+
+        uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+        uploadZone.addEventListener('dragleave', ()  => uploadZone.classList.remove('dragover'));
+        uploadZone.addEventListener('drop',      e  => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFiles(Array.from(e.dataTransfer.files));
+        });
+
+        // ── MAIN UPLOAD — fixed async, no forEach ─────────────────
+        async function handleFiles(files) {
+            if (!files.length) return;
+
+            const valid = files.filter(f => {
+                if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) {
+                    showToast(`❌ ${f.name} is not image/video`, 'error'); return false;
+                }
+                if (f.size > 500 * 1024 * 1024) {
+                    showToast(`❌ ${f.name} too large (max 500MB)`, 'error'); return false;
+                }
+                return true;
+            });
+
+            if (!valid.length) return;
+
+            progressBar.style.display = 'block';
+            let done = 0, ok = 0;
+
+            for (const file of valid) {
+                uploadStatus.textContent = `⏳ Uploading ${file.name}…`;
+                uploadStatus.className = 'status-text';
+
+                let saved = false;
+
+                // ── Try local server first (saves to assets/) ──
+                if (serverOnline) {
+                    try {
+                        const fd = new FormData();
+                        fd.append('file', file);
+                        const r = await fetch('/api/upload', { method: 'POST', body: fd });
+                        if (r.ok) {
+                            const data = await r.json();
+                            console.log('✅ Saved to assets:', data.media.url);
+                            saved = true; ok++;
+                        }
+                    } catch (e) {
+                        console.warn('Server upload failed:', e);
+                    }
+                }
+
+                // ── Fallback: browser IndexedDB (base64) ──
+                if (!saved) {
+                    try {
+                        const b64 = await readAsDataURL(file);
+                        const entry = {
+                            name: file.name,
+                            url: b64,
+                            type: file.type,
+                            size: file.size,
+                            timestamp: Date.now(),
+                            isLocal: true,
+                            isProjectFile: false
+                        };
+                        let list = await localforage.getItem('uploaded_media') || [];
+                        list.unshift(entry);
+                        await localforage.setItem('uploaded_media', list);
+                        ok++;
+                    } catch (e) {
+                        console.error('Storage error:', e);
+                        showToast(`❌ Failed to save ${file.name}`, 'error');
+                    }
+                }
+
+                done++;
+                progressFill.style.width = `${(done / valid.length) * 100}%`;
+            }
+
+            uploadStatus.textContent = `✅ ${ok}/${valid.length} files saved`;
+            uploadStatus.className = 'status-text complete';
+
+            setTimeout(() => {
+                progressBar.style.display = 'none';
+                progressFill.style.width  = '0%';
+                uploadStatus.textContent  = '';
+                fileInput.value           = '';
+                if (ok > 0) {
+                    showToast(`✅ ${ok} file(s) uploaded!`);
+                    refreshMedia();
+                }
+            }, 1500);
+        }
+
+        function readAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const r = new FileReader();
+                r.onload  = e => resolve(e.target.result);
+                r.onerror = reject;
+                r.readAsDataURL(file);
+            });
+        }
+
+        // ── Add Asset by Path (for GitHub Pages workflow) ─────────
+        async function addLocalFile() {
+            const filePath = document.getElementById('localFilePath').value.trim();
+            const fileType = document.getElementById('localFileType').value;
+            if (!filePath) { alert('Please enter a file path!'); return; }
+
+            const fileName = filePath.split('/').pop();
+            const entry = {
+                name: fileName,
+                url: filePath,
+                type: fileType,
+                size: 0,
+                timestamp: Date.now(),
+                isLocal: true,
+                isProjectFile: true
+            };
+
+            // Get current list
+            let list = await getMediaList();
+
+            if (list.some(m => m.url === filePath)) {
+                alert('⚠️ Already in portfolio!'); return;
+            }
+            list.unshift(entry);
+
+            await saveMediaList(list);
+            document.getElementById('localFilePath').value = '';
+            showToast('✅ Asset added to portfolio!');
+            refreshMedia();
+        }
+
+        // ── Get / Save media list (server → localforage fallback) ─
+        async function getMediaList() {
+            if (serverOnline) {
+                try {
+                    const r = await fetch('/api/media');
+                    if (r.ok) return await r.json();
+                } catch {}
+            }
+            return await localforage.getItem('uploaded_media') || [];
+        }
+
+        async function saveMediaList(list) {
+            if (serverOnline) {
+                try {
+                    const r = await fetch('/api/reorder', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mediaList: list })
+                    });
+                    if (r.ok) return;
+                } catch {}
+            }
+            await localforage.setItem('uploaded_media', list);
+        }
+
+        // ── Refresh / Render media grid ───────────────────────────
+        async function refreshMedia() {
+            mediaGrid.innerHTML = `<div class="glass-card" style="padding:3rem;text-align:center;grid-column:1/-1">
+                <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--gold)"></i>
+                <p style="margin-top:1rem;color:var(--text-secondary)">Loading media…</p>
+            </div>`;
+
+            const list = await getMediaList();
+
+            if (!list.length) {
+                mediaGrid.innerHTML = `<div class="glass-card" style="padding:3rem;text-align:center;grid-column:1/-1">
+                    <i class="fas fa-images" style="font-size:3rem;color:var(--gold);opacity:0.5"></i>
+                    <p style="margin-top:1rem;color:var(--text-secondary)">No media yet. Upload files or add asset paths below.</p>
+                </div>`;
+                return;
+            }
+
+            mediaGrid.innerHTML = '';
+
+            list.forEach((media, index) => {
+                const isVideo      = media.type && media.type.startsWith('video/');
+                const isProjectFile = media.isProjectFile || false;
+                const fileSize     = media.size ? (media.size / 1024 / 1024).toFixed(2) : null;
+
+                // Build preview URL — project files relative to root from admin/
+                let previewUrl = media.url;
+                if (isProjectFile && !previewUrl.startsWith('data:') && !previewUrl.startsWith('blob:')) {
+                    previewUrl = previewUrl.replace(/^\/+/, '');
+                    if (!previewUrl.startsWith('../')) previewUrl = '../' + previewUrl;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'media-item glass-card';
+
+                // ── Preview container
+                const preview = document.createElement('div');
+                preview.className = 'media-preview-container';
+
+                if (isVideo) {
+                    const vid = document.createElement('video');
+                    vid.src      = previewUrl;
+                    vid.muted    = true;
+                    vid.preload  = 'metadata';
+                    vid.playsInline = true;
+                    vid.style.cssText = 'width:100%;height:100%;object-fit:cover;background:#000';
+                    vid.addEventListener('loadedmetadata', () => { vid.currentTime = 0.1; });
+                    vid.addEventListener('error', () => {
+                        preview.innerHTML = `<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a1a;color:#666">
+                            <i class="fas fa-video-slash" style="font-size:2rem;margin-bottom:0.5rem"></i>
+                            <p style="font-size:0.75rem">Cannot preview<br><span style="font-size:0.65rem;opacity:0.7">(works on main site)</span></p>
+                        </div>`;
+                    });
+
+                    const playBtn = document.createElement('div');
+                    playBtn.className = 'video-play-overlay';
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    playBtn.onclick = () => {
+                        if (vid.paused) { vid.play(); vid.muted = false; playBtn.style.display = 'none'; }
+                        else { vid.pause(); playBtn.style.display = 'flex'; }
+                    };
+                    vid.addEventListener('ended', () => { playBtn.style.display = 'flex'; playBtn.innerHTML = '<i class="fas fa-redo"></i>'; });
+
+                    preview.appendChild(vid);
+                    preview.appendChild(playBtn);
+                } else {
+                    const img = document.createElement('img');
+                    img.src   = previewUrl;
+                    img.alt   = media.name;
+                    img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+                    img.addEventListener('error', () => {
+                        preview.innerHTML = `<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a1a;color:#666">
+                            <i class="fas fa-image" style="font-size:2rem;margin-bottom:0.5rem;opacity:0.5"></i>
+                            <p style="font-size:0.75rem">Cannot preview<br><span style="font-size:0.65rem;opacity:0.7">(works on main site)</span></p>
+                        </div>`;
+                    });
+                    preview.appendChild(img);
+                }
+
+                // Badge
+                const badge = document.createElement('div');
+                badge.style.cssText = 'position:absolute;top:8px;left:8px;padding:0.3rem 0.7rem;border-radius:8px;font-size:0.65rem;font-weight:700;z-index:2';
+                if (isProjectFile) {
+                    badge.style.background = 'rgba(212,175,55,0.95)'; badge.style.color = '#000';
+                    badge.innerHTML = '<i class="fas fa-folder"></i> Asset File';
+                } else {
+                    badge.style.background = 'rgba(75,255,75,0.95)'; badge.style.color = '#000';
+                    badge.innerHTML = '<i class="fas fa-check-circle"></i> Uploaded';
+                }
+                preview.appendChild(badge);
+
+                // ── Info
+                const info = document.createElement('div');
+                info.className = 'media-info';
+                info.innerHTML = `
+                    <div class="media-name" title="${media.name}">
+                        <i class="fas fa-${isVideo ? 'video' : 'image'}" style="color:var(--${isVideo ? 'orange' : 'gold'})"></i>
+                        ${media.name}
+                    </div>
+                    <div style="color:var(--text-secondary);font-size:0.72rem;margin-bottom:0.5rem">
+                        ${fileSize ? `<i class="fas fa-hdd"></i> ${fileSize} MB` : '<i class="fas fa-link"></i> Asset path'}
+                        <span style="margin-left:0.5rem;color:var(--gold)">
+                            <i class="fas fa-clock"></i> ${new Date(media.timestamp).toLocaleDateString()}
+                        </span>
+                    </div>
+                    ${isProjectFile ? `<div style="color:var(--gold);font-size:0.65rem;margin-bottom:0.7rem;font-family:'Courier New',monospace;background:rgba(212,175,55,0.08);padding:0.3rem 0.5rem;border-radius:6px;border:1px solid rgba(212,175,55,0.2)">
+                        ${media.url}
+                    </div>` : ''}
+                    <div class="media-actions">
+                        <button class="copy-btn" onclick="copyURL('${media.url.replace(/'/g,"\\'")}')">
+                            <i class="fas fa-copy"></i> Copy URL
+                        </button>
+                        <button class="delete-media-btn" onclick="deleteMedia(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>`;
+
+                card.appendChild(preview);
+                card.appendChild(info);
+                mediaGrid.appendChild(card);
+            });
+
+            initSortable();
+        }
+
+        // ── Delete ────────────────────────────────────────────────
+        async function deleteMedia(index) {
+            if (!confirm('Delete this media?')) return;
+
+            if (serverOnline) {
+                try {
+                    const r = await fetch(`/api/media/${index}`, { method: 'DELETE' });
+                    if (r.ok) { refreshMedia(); showToast('Deleted!'); return; }
+                } catch {}
+            }
+            let list = await localforage.getItem('uploaded_media') || [];
+            list.splice(index, 1);
+            await localforage.setItem('uploaded_media', list);
+            refreshMedia();
+            showToast('Deleted!');
+        }
+
+        // ── Sortable drag-drop reorder ────────────────────────────
+        let sortableInstance = null;
+        function initSortable() {
+            if (sortableInstance) sortableInstance.destroy();
+            sortableInstance = new Sortable(mediaGrid, {
+                animation: 250,
+                ghostClass: 'sortable-ghost',
+                delay: 150,
+                delayOnTouchOnly: true,
+                onEnd: async ({ oldIndex, newIndex }) => {
+                    if (oldIndex === newIndex) return;
+                    let list = await getMediaList();
+                    const moved = list.splice(oldIndex, 1)[0];
+                    list.splice(newIndex, 0, moved);
+                    await saveMediaList(list);
+                    showToast('✅ Reordered!');
+                }
+            });
+        }
+
+        // ── Helpers ───────────────────────────────────────────────
+        function copyURL(url) {
+            navigator.clipboard.writeText(url).then(() => showToast('URL copied!'));
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('successToast');
+            document.getElementById('successMessage').textContent = msg;
+            toast.style.borderColor = type === 'error' ? 'rgba(255,75,75,0.3)' : 'rgba(75,255,75,0.3)';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ── Init ──────────────────────────────────────────────────
+        (async () => {
+            await checkServer();
+            refreshMedia();
+        })();
+    </script>
+</body>
+</html>
