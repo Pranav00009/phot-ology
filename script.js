@@ -434,6 +434,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const navIndicator = document.querySelector('.nav-indicator');
     const ambientGlow  = document.querySelector('.nav-ambient-glow');
 
+    // Only track sections that have a matching nav link
+    const navHrefs = Array.from(navItems).map(n => n.getAttribute('href').replace('#', ''));
+
     /* ── Sync indicator + ambient glow to active item ── */
     function updateNavIndicator() {
         const activeItem = document.querySelector('.nav-item.active');
@@ -456,9 +459,22 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ── Ripple burst on click ── */
     function triggerRipple(item) {
         item.classList.remove('ripple-active');
-        void item.offsetWidth; // force reflow
+        void item.offsetWidth;
         item.classList.add('ripple-active');
         setTimeout(() => item.classList.remove('ripple-active'), 600);
+    }
+
+    /* ── Smooth scroll with nav bar offset ── */
+    function scrollToSection(targetId) {
+        const target = document.querySelector(targetId);
+        if (!target) return;
+
+        // Get nav bar height for offset
+        const nav = document.getElementById('bottomNav');
+        const navH = nav ? nav.offsetHeight + 20 : 80;
+
+        const top = target.getBoundingClientRect().top + window.pageYOffset - navH;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     }
 
     /* ── Set active nav item ── */
@@ -468,7 +484,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const willBeActive = nav.getAttribute('href') === targetHref;
 
             if (willBeActive && !wasActive) {
-                // Remove first to force animation replay
                 nav.classList.remove('active');
                 void nav.offsetWidth;
                 nav.classList.add('active');
@@ -479,9 +494,12 @@ document.addEventListener('DOMContentLoaded', () => {
         updateNavIndicator();
     }
 
-    /* ── Scroll-based active detection ── */
+    /* ── Scroll-based active detection (only nav-linked sections) ── */
     window.addEventListener('scroll', () => {
-        const sections = document.querySelectorAll('section[id]');
+        // Only consider sections with a matching nav href
+        const sections = Array.from(document.querySelectorAll('section[id]'))
+            .filter(s => navHrefs.includes(s.getAttribute('id')));
+
         let current = '';
         const scrollMid = window.pageYOffset + window.innerHeight / 3;
 
@@ -501,11 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             triggerRipple(item);
             setActiveNav(item.getAttribute('href'));
-
-            const target = document.querySelector(item.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            scrollToSection(item.getAttribute('href'));
         });
 
         /* ── Magnetic hover on desktop ── */
