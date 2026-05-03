@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PHOTOLOGY Admin</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    
+    <!-- Firebase Config -->
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpqujJa_MlFmCAbeWCs-tuptuGNAq9JqM",
+            authDomain: "agency-abe45.firebaseapp.com",
+            databaseURL: "https://agency-abe45-default-rtdb.firebaseio.com",
+            projectId: "agency-abe45",
+            storageBucket: "agency-abe45.firebasestorage.app",
+            messagingSenderId: "758327590163",
+            appId: "1:758327590163:web:e19e4c5d57b258e32aaee6",
+            measurementId: "G-ZKRJ2QM1CX"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        console.log('🔥 Firebase initialized in admin panel');
+    </script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-logo">PHOTOLOGY</h1>
+                <p class="sidebar-subtitle">Admin Panel</p>
+            </div>
+            
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link active">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="messages.html" class="nav-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="media-upload.html" class="nav-link">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Media Upload</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pricing.html" class="nav-link">
+                            <i class="fas fa-tag"></i>
+                            <span>Pricing</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <button class="logout-button" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back! Here's your overview</p>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="stat-value" id="totalMessages">0</div>
+                    <div class="stat-label">Total Messages</div>
+                </div>
+                
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
+                    <div class="stat-value" id="newMessages">0</div>
+                    <div class="stat-label">New Messages</div>
+                </div>
+                
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div class="stat-value" id="totalPortfolio">6</div>
+                    <div class="stat-label">Portfolio Items</div>
+                </div>
+                
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-value">3.5+</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+            </div>
+            
+            <!-- Recent Messages -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Messages</h2>
+                    <a href="messages.html" class="add-button">
+                        <span>View All</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="glass-card" style="padding: 0; overflow: hidden;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentMessagesTable">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 2rem;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
+                                    <p style="margin-top: 1rem; color: var(--text-secondary);">Loading messages...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Quick Actions</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <a href="pricing.html" class="stat-card glass-card" style="text-decoration: none; cursor: pointer;">
+                        <div class="stat-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="stat-label" style="color: var(--text-primary); font-weight: 600;">Edit Pricing</div>
+                    </a>
+                    
+                    <a href="media-upload.html" class="stat-card glass-card" style="text-decoration: none; cursor: pointer;">
+                        <div class="stat-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="stat-label" style="color: var(--text-primary); font-weight: 600;">Upload Media</div>
+                    </a>
+                    
+                    <a href="../index.html" target="_blank" class="stat-card glass-card" style="text-decoration: none; cursor: pointer;">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-label" style="color: var(--text-primary); font-weight: 600;">View Website</div>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Dashboard Script -->
+    <script>
+        // Check authentication (localStorage based)
+        const isLoggedIn = localStorage.getItem('photology_admin_logged_in');
+        if (isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('photology_admin_logged_in');
+            localStorage.removeItem('photology_admin_email');
+            window.location.href = 'login.html';
+        });
+        
+        // Load Dashboard Data
+        async function loadDashboardData() {
+            try {
+                // Get messages count
+                const messagesRef = database.ref('contacts');
+                const snapshot = await messagesRef.once('value');
+                const messages = snapshot.val();
+                
+                // Get uploaded media count
+                const uploadedMedia = await localforage.getItem('uploaded_media') || [];
+                document.getElementById('totalPortfolio').textContent = uploadedMedia.length;
+                
+                if (messages) {
+                    const messageArray = Object.entries(messages).map(([id, data]) => ({
+                        id,
+                        ...data
+                    }));
+                    
+                    // Update stats
+                    document.getElementById('totalMessages').textContent = messageArray.length;
+                    
+                    // Count new messages (status: 'new')
+                    const newCount = messageArray.filter(m => m.status === 'new').length;
+                    document.getElementById('newMessages').textContent = newCount;
+                    
+                    // Display recent messages (last 5)
+                    displayRecentMessages(messageArray.slice(-5).reverse());
+                } else {
+                    document.getElementById('totalMessages').textContent = '0';
+                    document.getElementById('newMessages').textContent = '0';
+                    document.getElementById('recentMessagesTable').innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                No messages yet
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                document.getElementById('recentMessagesTable').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: #ff4b4b;">
+                            Error loading messages. Check console for details.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function displayRecentMessages(messages) {
+            const tableBody = document.getElementById('recentMessagesTable');
+            
+            if (messages.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            No messages yet
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tableBody.innerHTML = messages.map(msg => `
+                <tr>
+                    <td style="font-weight: 600; color: var(--text-primary);">${msg.name || 'N/A'}</td>
+                    <td>${msg.email || 'N/A'}</td>
+                    <td style="color: var(--orange);">${msg.phone || 'N/A'}</td>
+                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${msg.message || 'N/A'}
+                    </td>
+                    <td>${msg.timestamp ? new Date(msg.timestamp).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                        <span style="padding: 0.25rem 0.75rem; background: ${msg.status === 'new' ? 'rgba(255, 140, 66, 0.15)' : 'rgba(75, 255, 75, 0.15)'}; color: ${msg.status === 'new' ? 'var(--orange)' : '#4bff4b'}; border-radius: 50px; font-size: 0.8rem; font-weight: 600;">
+                            ${msg.status === 'new' ? 'New' : 'Read'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Load data on page load
+        loadDashboardData();
+    </script>
+</body>
+</html>

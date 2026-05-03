@@ -1,0 +1,27 @@
+# Image Assets Folder
+
+Place your images here:
+
+## Required Images:
+
+1. **hero-silhouette.jpg** (1920x1080px)
+   - Cinematic silhouette with warm orange/gold rim lighting
+   - Dark background with sunset glow effect
+   - Professional photography or videography scene
+
+2. **about-image.jpg** (1200x800px)
+   - Professional team photo or workspace
+   - Cinematic lighting with warm tones
+   - High-quality, premium feel
+
+3. **portfolio-1.jpg to portfolio-6.jpg** (800x1000px each)
+   - Vertical format thumbnails for Instagram reels
+   - High-quality preview images from your best work
+   - Consistent style and quality across all thumbnails
+
+## Image Optimization Tips:
+- Compress images to under 200KB each
+- Use JPG format for photos
+- Consider WebP format for better compression
+- Maintain aspect ratios for best display
+- Use tools like TinyPNG or ImageOptim
