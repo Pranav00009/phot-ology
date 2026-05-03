@@ -877,349 +877,258 @@ body::before {
 }
 
 /* ================================================================
-   BOTTOM NAVIGATION — PREMIUM CINEMATIC DOCK
+   BOTTOM NAVIGATION — REFERENCE STYLE DOCK  (gold × dark theme)
+   Active: rounded-square gold bg | Inactive: outline icons only
    ================================================================ */
 
-/* Container */
+/* ── Container ── */
 .bottom-nav {
     position: fixed;
-    bottom: 0.75rem;
+    bottom: 0.9rem;
     left: 50%;
     transform: translateX(-50%) translateY(0);
     display: flex;
     align-items: center;
-    gap: 1px;
-    padding: 3px;
-    border-radius: 20px;
-    background: rgba(8, 8, 8, 0.72);
-    backdrop-filter: blur(32px) saturate(180%) brightness(0.9);
-    -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(0.9);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    gap: 2px;
+    padding: 4px;
+    border-radius: 26px;
+    background: rgba(10, 10, 10, 0.78);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.7),
-        0 6px 14px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        0 0 0 0.5px rgba(255, 255, 255, 0.04);
+        0 24px 48px rgba(0, 0, 0, 0.75),
+        0 6px 16px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
     z-index: 9999;
     pointer-events: auto;
-    transition:
-        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
-        opacity 0.4s ease;
-    animation: navEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+    animation: navSlideUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
     will-change: transform, opacity;
     overflow: visible;
 }
 
-@keyframes navEntrance {
-    0%   { transform: translateX(-50%) translateY(120px); opacity: 0; }
-    60%  { opacity: 1; }
-    100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+@keyframes navSlideUp {
+    0%   { transform: translateX(-50%) translateY(100px); opacity: 0; }
+    100% { transform: translateX(-50%) translateY(0);     opacity: 1; }
 }
 
 /* Hide on scroll down */
 .bottom-nav.hidden {
-    transform: translateX(-50%) translateY(140px) !important;
+    transform: translateX(-50%) translateY(120px) !important;
     opacity: 0;
     pointer-events: none;
 }
 
-/* Liquid Morphing Pill Indicator */
-.nav-indicator {
-    position: absolute;
-    top: 5px;
-    height: calc(100% - 10px);
-    width: 60px;
-    left: 5px;
-    background: linear-gradient(
-        135deg,
-        rgba(212, 175, 55, 0.22) 0%,
-        rgba(212, 175, 55, 0.1) 50%,
-        rgba(255, 140, 66, 0.08) 100%
-    );
-    border: 1px solid rgba(212, 175, 55, 0.35);
-    border-radius: 22px;
-    z-index: 0;
-    transition:
-        left  0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
-        width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: left, width;
-    box-shadow:
-        0 0 20px rgba(212, 175, 55, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 0 20px rgba(212, 175, 55, 0.06);
-    overflow: hidden;
-}
+/* ── Sliding indicator (hidden — active bg is on item itself) ── */
+.nav-indicator  { display: none; }
+.nav-ambient-glow { display: none; }
 
-.nav-indicator::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(212, 175, 55, 0.18) 40%,
-        rgba(255, 255, 255, 0.09) 50%,
-        rgba(212, 175, 55, 0.18) 60%,
-        transparent 100%
-    );
-    background-size: 200% 100%;
-    animation: indicatorShimmer 2.5s ease-in-out infinite;
-}
-
-@keyframes indicatorShimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
-}
-
-/* Ambient glow shadow below active item */
-.nav-ambient-glow {
-    position: absolute;
-    bottom: -16px;
-    left: 5px;
-    width: 60px;
-    height: 18px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(212, 175, 55, 0.55) 0%, transparent 70%);
-    filter: blur(8px);
-    z-index: -1;
-    pointer-events: none;
-    transition:
-        left  0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
-        width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: left, width;
-}
-
-/* Nav Item Base */
+/* ── Nav Item ── */
 .nav-item {
     position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 5px 9px 4px;
-    color: rgba(255, 255, 255, 0.35);
+    padding: 9px 11px;
+    border-radius: 20px;
+    min-width: 44px;
+    min-height: 44px;
     text-decoration: none;
-    border-radius: 16px;
-    min-width: 42px;
+    color: rgba(255, 255, 255, 0.38);
     cursor: pointer;
     outline: none;
     -webkit-tap-highlight-color: transparent;
-    transition: color 0.3s ease;
+    background: transparent;
+    transition:
+        color      0.3s ease,
+        background 0.4s ease;
     overflow: hidden;
+    z-index: 1;
 }
 
-/* Ripple layer */
+/* ── Ripple ── */
 .nav-ripple {
     position: absolute;
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    z-index: 0;
+    overflow: hidden;
 }
 
-.nav-ripple::before {
+.nav-ripple::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
     border-radius: 50%;
-    background: rgba(212, 175, 55, 0.22);
+    background: rgba(212, 175, 55, 0.25);
     transform: translate(-50%, -50%);
-    transition: none;
-    opacity: 1;
-}
-
-.nav-item.ripple-active .nav-ripple::before {
-    width: 180%;
-    height: 180%;
     opacity: 0;
-    transition: width 0.55s ease, height 0.55s ease, opacity 0.55s ease;
+    transition: none;
 }
 
-/* Per-item glow orb */
+.nav-item.ripple-active .nav-ripple::after {
+    width: 200%; height: 200%;
+    opacity: 0;
+    transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+}
+
+/* ── Glow orb (hidden for inactive) ── */
 .nav-glow-orb {
     position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-60%) scale(0.5);
-    width: 44px;
-    height: 44px;
+    top: 0; left: 50%;
+    transform: translateX(-50%) translateY(-50%) scale(0);
+    width: 50px; height: 50px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.75) 0%, transparent 65%);
-    filter: blur(14px);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.6) 0%, transparent 65%);
+    filter: blur(16px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: opacity, transform;
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 0;
 }
 
-/* Icon wrapper */
+/* ── Icon Wrap ── */
 .nav-icon-wrap {
     position: relative;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
-    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-    transform-origin: center bottom;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .nav-icon-wrap i {
-    font-size: 0.85rem;
+    font-size: 1rem;
     line-height: 1;
     display: block;
-    transition: color 0.3s ease, filter 0.3s ease;
+    /* Outline effect on inactive: thin weight */
+    -webkit-text-stroke: 0px;
+    transition: color 0.3s ease, filter 0.3s ease, transform 0.3s ease;
 }
 
-/* Label */
+/* ── Label — hidden by default, shown on active ── */
 .nav-label {
     position: relative;
     z-index: 1;
-    font-size: 0.42rem;
+    font-size: 0.5rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
     margin-top: 3px;
+    max-height: 0;
+    overflow: hidden;
     opacity: 0;
-    transform: translateY(4px);
-    transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
+    transition: max-height 0.3s ease, opacity 0.3s ease, color 0.3s ease;
     white-space: nowrap;
-}
-
-/* Active bottom dot */
-.nav-active-dot {
-    position: absolute;
-    bottom: 4px;
-    left: 50%;
-    transform: translateX(-50%) scale(0);
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--gold);
-    box-shadow: 0 0 8px rgba(212, 175, 55, 0.9), 0 0 16px rgba(212, 175, 55, 0.4);
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-    opacity: 0;
-    z-index: 1;
-}
-
-/* Hover state */
-.nav-item:hover {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.nav-item:hover .nav-icon-wrap {
-    transform: translateY(-3px) scale(1.08);
-}
-
-.nav-item:hover .nav-icon-wrap i {
-    filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.3));
-}
-
-.nav-item:hover .nav-label {
-    opacity: 0.55;
-    transform: translateY(0);
-}
-
-/* Active state */
-.nav-item.active {
     color: var(--gold);
 }
 
+/* ── Active dot — hidden (replaced by active bg) ── */
+.nav-active-dot { display: none; }
+
+/* ── HOVER ── */
+.nav-item:hover {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.nav-item:hover .nav-icon-wrap {
+    transform: translateY(-2px) scale(1.1);
+}
+
+/* ── ACTIVE STATE — reference style rounded square bg ── */
+.nav-item.active {
+    color: var(--gold);
+    /* Dark elevated rounded square like reference */
+    background: rgba(212, 175, 55, 0.13);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    box-shadow:
+        inset 0 1px 0 rgba(212, 175, 55, 0.15),
+        0 4px 16px rgba(212, 175, 55, 0.12),
+        0 0 0 1px rgba(212, 175, 55, 0.08);
+}
+
+/* Active icon — bounces up, glows gold */
 .nav-item.active .nav-icon-wrap {
-    transform: translateY(-3px) scale(1.15);
-    animation: navIconPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation: iconBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 .nav-item.active .nav-icon-wrap i {
     color: var(--gold);
     filter:
-        drop-shadow(0 0 6px rgba(212, 175, 55, 0.9))
-        drop-shadow(0 2px 10px rgba(212, 175, 55, 0.5));
+        drop-shadow(0 0 5px rgba(212, 175, 55, 0.8))
+        drop-shadow(0 0 14px rgba(212, 175, 55, 0.3));
 }
 
+/* Label slides in below icon when active */
 .nav-item.active .nav-label {
+    max-height: 20px;
     opacity: 1;
-    transform: translateY(0);
-    color: var(--gold);
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
-    animation: labelReveal 0.4s ease both;
+    animation: labelFadeIn 0.3s ease 0.1s both;
 }
 
+/* Glow orb rises on active */
 .nav-item.active .nav-glow-orb {
     opacity: 1;
-    transform: translateX(-50%) translateY(-30%) scale(1);
+    transform: translateX(-50%) translateY(-25%) scale(1);
 }
 
-.nav-item.active .nav-active-dot {
-    transform: translateX(-50%) scale(1);
-    opacity: 1;
-    animation: dotPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+/* ── Keyframes ── */
+@keyframes iconBounce {
+    0%   { transform: translateY(3px) scale(0.85); }
+    40%  { transform: translateY(-5px) scale(1.2); }
+    65%  { transform: translateY(-1px) scale(1.05); }
+    100% { transform: translateY(0) scale(1); }
 }
 
-/* Keyframes */
-@keyframes navIconPop {
-    0%   { transform: translateY(0)    scale(0.8);  }
-    35%  { transform: translateY(-6px) scale(1.28); }
-    65%  { transform: translateY(-2px) scale(1.1);  }
-    100% { transform: translateY(-3px) scale(1.15); }
+@keyframes labelFadeIn {
+    0%   { opacity: 0; transform: translateY(3px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes labelReveal {
-    0%   { opacity: 0; transform: translateY(6px);  }
-    100% { opacity: 1; transform: translateY(0);    }
+/* Mobile tap feedback */
+.nav-item:active {
+    transform: scale(0.93);
+    transition-duration: 0.08s;
 }
 
-@keyframes dotPop {
-    0%   { transform: translateX(-50%) scale(0);   opacity: 0; }
-    60%  { transform: translateX(-50%) scale(1.5); opacity: 1; }
-    100% { transform: translateX(-50%) scale(1);   opacity: 1; }
-}
-
-/* Mobile tap press */
-.nav-item:active .nav-icon-wrap {
-    transform: scale(0.88) translateY(1px) !important;
-    transition-duration: 0.08s !important;
-}
-
-/* Tablet & Desktop */
+/* ── Tablet & Desktop — larger, with visible labels ── */
 @media (min-width: 640px) {
     .bottom-nav {
         gap: 4px;
-        padding: 6px;
-        border-radius: 30px;
+        padding: 5px;
+        border-radius: 28px;
         bottom: 1.4rem;
     }
 
     .nav-item {
-        padding: 10px 20px 8px;
-        min-width: 82px;
-        border-radius: 24px;
+        padding: 10px 18px;
+        min-width: 78px;
+        border-radius: 22px;
     }
 
     .nav-icon-wrap {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
     }
 
     .nav-icon-wrap i {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .nav-label {
-        font-size: 0.65rem;
-        margin-top: 5px;
-        opacity: 0.35;
-        transform: translateY(0);
+        font-size: 0.6rem;
+        /* Always slightly visible on desktop */
+        max-height: 20px;
+        opacity: 0.3;
     }
 
     .nav-item:hover .nav-label {
-        opacity: 0.7;
+        opacity: 0.65;
     }
 
     .nav-item.active .nav-label {
@@ -1227,14 +1136,12 @@ body::before {
     }
 
     .nav-item:hover .nav-icon-wrap {
-        transform: translateY(-5px) scale(1.12);
+        transform: translateY(-3px) scale(1.1);
     }
 }
 
 @media (min-width: 1024px) {
-    .bottom-nav {
-        bottom: 1.8rem;
-    }
+    .bottom-nav { bottom: 1.8rem; }
 }
 /* ===== PREMIUM GLASSMORPHISM DESIGN SYSTEM - iOS STYLE ===== */
 .glass-card {

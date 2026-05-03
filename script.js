@@ -437,23 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only track sections that have a matching nav link
     const navHrefs = Array.from(navItems).map(n => n.getAttribute('href').replace('#', ''));
 
-    /* ── Sync indicator + ambient glow to active item ── */
+    /* ── Indicator hidden (active bg is CSS-only on item) ── */
     function updateNavIndicator() {
-        const activeItem = document.querySelector('.nav-item.active');
-        if (!activeItem || !navIndicator) return;
-
-        requestAnimationFrame(() => {
-            const w = activeItem.offsetWidth;
-            const l = activeItem.offsetLeft;
-
-            navIndicator.style.width = `${w}px`;
-            navIndicator.style.left  = `${l}px`;
-
-            if (ambientGlow) {
-                ambientGlow.style.width = `${w}px`;
-                ambientGlow.style.left  = `${l}px`;
-            }
-        });
+        // No-op: nav-indicator & nav-ambient-glow are display:none in new design.
+        // Active state is handled purely via .active class CSS.
     }
 
     /* ── Ripple burst on click ── */
