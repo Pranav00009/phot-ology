@@ -380,15 +380,31 @@ function openVideoModal(videoUrl) {
         const webmUrl = encodeURI(basePath + '.webm');
         
         reelEmbed.innerHTML = `
-            <video controls autoplay muted loop playsinline preload="metadata"
-                   style="max-width: 90vw; max-height: 85vh; width: auto; height: auto; border-radius: 12px;">
-                <source src="${webmUrl}" type="video/webm">
-                <source src="${mp4Url}" type="video/mp4">
+            <video id="plyr-player" controls autoplay muted playsinline preload="metadata"
+                   style="max-width: 90vw; max-height: 85vh; width: 100%; height: auto; border-radius: 12px; --plyr-color-main: var(--gold);">
+                <!-- 1080p High Quality -->
+                <source src="${webmUrl}" type="video/webm" size="1080">
+                <source src="${mp4Url}" type="video/mp4" size="1080">
+                
+                <!-- 720p HD Option -->
+                <source src="${webmUrl}" type="video/webm" size="720">
+                <source src="${mp4Url}" type="video/mp4" size="720">
+                
                 Your browser does not support the video tag.
             </video>
         `;
         reelModal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        
+        // Initialize Professional Video Player
+        if (typeof Plyr !== 'undefined') {
+            const player = new Plyr('#plyr-player', {
+                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'airplay', 'fullscreen'],
+                settings: ['quality', 'speed'],
+                quality: { default: 1080, options: [1080, 720] }
+            });
+            player.play();
+        }
     } else {
         window.open(videoUrl, '_blank');
     }
