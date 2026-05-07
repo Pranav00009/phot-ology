@@ -619,7 +619,8 @@ if (closeModal) {
 
 if (reelModal) {
     reelModal.addEventListener('click', (e) => {
-        if (e.target === reelModal) {
+        // Only ignore clicks directly on the media itself
+        if (e.target.tagName !== 'VIDEO' && e.target.tagName !== 'IMG') {
             closeReelModal();
         }
     });
