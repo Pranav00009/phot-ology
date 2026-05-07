@@ -7,28 +7,18 @@ async function loadDynamicContent() {
         const settings = JSON.parse(localStorage.getItem('website_settings')) || null;
         const pricingPlans = JSON.parse(localStorage.getItem('pricing_plans')) || null;
         
-        // 1. Try to load media from physical media.json (Works on GitHub Pages & Local Server)
-        let physicalMedia = [];
+        // 1. Load media ONLY from physical media.json
+        // (localforage is NOT merged — it causes duplicate/extra cards from old admin uploads)
+        let uploadedMedia = [];
         try {
-            const response = await fetch('assets/media.json?t=' + Date.now()); // cache bust
+            const response = await fetch('assets/media.json?t=' + Date.now());
             if (response.ok) {
-                physicalMedia = await response.json();
+                uploadedMedia = await response.json();
+                console.log('✅ media.json loaded:', uploadedMedia.length, 'items');
             }
         } catch(e) { 
-            console.warn('No media.json found or fetch failed'); 
+            console.warn('No media.json found or fetch failed', e); 
         }
-        
-        // 2. Load from localforage (IndexedDB - Admin panel uploads)
-        let localMedia = await localforage.getItem('uploaded_media') || [];
-        
-        // Combine both sources, avoiding duplicates by URL
-        const allMedia = [...physicalMedia, ...localMedia];
-        const uniqueUrls = new Set();
-        let uploadedMedia = allMedia.filter(m => {
-            if (uniqueUrls.has(m.url)) return false;
-            uniqueUrls.add(m.url);
-            return true;
-        });
         
         if (settings) {
             console.log('✅ Settings found:', settings);
