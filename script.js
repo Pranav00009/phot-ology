@@ -238,11 +238,13 @@ function updatePortfolioFromMedia(mediaList) {
         // Create media element
         if (media.type.startsWith('video/')) {
             const video = document.createElement('video');
-            video.src = media.url;
+            video.src = encodeURI(media.url);
             video.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
             video.muted = true;
             video.preload = 'metadata';
             video.playsInline = true;
+            video.autoplay = true;
+            video.loop = true;
             
             // Set video to first frame
             video.addEventListener('loadedmetadata', function() {
@@ -258,7 +260,7 @@ function updatePortfolioFromMedia(mediaList) {
             card.appendChild(video);
         } else {
             const img = document.createElement('img');
-            img.src = media.url;
+            img.src = encodeURI(media.url);
             img.alt = media.name || `Portfolio ${index + 1}`;
             img.loading = 'lazy';
             img.onerror = function() {
@@ -307,7 +309,7 @@ function openVideoModal(videoUrl) {
         reelEmbed.innerHTML = `
             <video controls autoplay 
                    style="max-width: 90vw; max-height: 85vh; width: auto; height: auto; border-radius: 12px;">
-                <source src="${videoUrl}" type="video/mp4">
+                <source src="${encodeURI(videoUrl)}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         `;
@@ -325,7 +327,7 @@ function openImageModal(imageUrl) {
     
     if (reelModal && reelEmbed) {
         reelEmbed.innerHTML = `
-            <img src="${imageUrl}" alt="Portfolio Image" 
+            <img src="${encodeURI(imageUrl)}" alt="Portfolio Image" 
                  style="max-width: 90vw; max-height: 85vh; width: auto; height: auto; border-radius: 12px; object-fit: contain;">
         `;
         reelModal.classList.add('active');
