@@ -272,9 +272,10 @@ function updatePortfolioFromMedia(mediaList) {
             <p>${media.type.startsWith('video/') ? 'Play Video' : 'View Image'}</p>
         `;
         
-        // Create media element
+        // Create media element - use direct src for reliable playback
         if (media.type.startsWith('video/')) {
             const video = document.createElement('video');
+            video.src = encodeURI(media.url);
             video.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
             video.muted = true;
             video.preload = 'metadata';
@@ -282,39 +283,12 @@ function updatePortfolioFromMedia(mediaList) {
             video.autoplay = true;
             video.loop = true;
             
-            // Check if it's a blob/data URL or a normal file
-            let mp4Url, webmUrl;
-            if (media.url.startsWith('blob:') || media.url.startsWith('data:')) {
-                mp4Url = media.url;
-                webmUrl = media.url;
-            } else {
-                const lastDot = media.url.lastIndexOf('.');
-                const basePath = lastDot > -1 ? media.url.substring(0, lastDot) : media.url;
-                mp4Url = encodeURI(basePath + '.mp4');
-                webmUrl = encodeURI(basePath + '.webm');
-            }
-            
-            // Add WebM source
-            const webmSource = document.createElement('source');
-            webmSource.src = webmUrl;
-            webmSource.type = 'video/webm';
-            video.appendChild(webmSource);
-            
-            // Add MP4 source
-            const mp4Source = document.createElement('source');
-            mp4Source.src = mp4Url;
-            mp4Source.type = 'video/mp4';
-            video.appendChild(mp4Source);
-            
-            // Add fallback text
-            video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
-            
-            // Set video to first frame
+            // Set video to first frame on load
             video.addEventListener('loadedmetadata', function() {
                 this.currentTime = 0.1;
             });
             
-            // Error handling (if both sources fail, though error event behaves differently on <source>)
+            // Error handling
             video.addEventListener('error', function() {
                 console.error('Video load error:', media.url);
                 this.style.display = 'none';
@@ -383,48 +357,26 @@ function attachMediaPortfolioListeners() {
     });
 }
 
-// Open video in modal with original aspect ratio
+// Open video in modal - simple native player (reliable)
 function openVideoModal(videoUrl) {
     const reelModal = document.getElementById('reelModal');
     const reelEmbed = document.getElementById('reelEmbed');
     
     if (reelModal && reelEmbed) {
-        let mp4Url, webmUrl;
-        if (videoUrl.startsWith('blob:') || videoUrl.startsWith('data:')) {
-            mp4Url = videoUrl;
-            webmUrl = videoUrl;
-        } else {
-            const lastDot = videoUrl.lastIndexOf('.');
-            const basePath = lastDot > -1 ? videoUrl.substring(0, lastDot) : videoUrl;
-            mp4Url = encodeURI(basePath + '.mp4');
-            webmUrl = encodeURI(basePath + '.webm');
-        }
-        
         reelEmbed.innerHTML = `
-            <video id="plyr-player" controls autoplay muted playsinline preload="metadata"
-                   style="max-width: 90vw; max-height: 85vh; width: 100%; height: auto; border-radius: 12px; --plyr-color-main: var(--gold);">
-                <!-- 1080p High Quality -->
-                <source src="${webmUrl}" type="video/webm" size="1080">
-                <source src="${mp4Url}" type="video/mp4" size="1080">
-                
-                <!-- 720p HD Option -->
-                <source src="${webmUrl}" type="video/webm" size="720">
-                <source src="${mp4Url}" type="video/mp4" size="720">
-                
+            <video controls autoplay muted playsinline
+                   style="max-width: 90vw; max-height: 85vh; width: auto; height: auto; border-radius: 12px;">
+                <source src="${encodeURI(videoUrl)}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         `;
         reelModal.classList.add('active');
         document.body.style.overflow = 'hidden';
         
-        // Initialize Professional Video Player
-        if (typeof Plyr !== 'undefined') {
-            const player = new Plyr('#plyr-player', {
-                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'airplay', 'fullscreen'],
-                settings: ['quality', 'speed'],
-                quality: { default: 1080, options: [1080, 720] }
-            });
-            player.play();
+        // Autoplay the video
+        const vid = reelEmbed.querySelector('video');
+        if (vid) {
+            vid.play().catch(() => { /* user gesture required on some devices */ });
         }
     } else {
         window.open(videoUrl, '_blank');
@@ -730,8 +682,8 @@ if (closeModal) {
 
 if (reelModal) {
     reelModal.addEventListener('click', (e) => {
-        // Ignore clicks directly on media or inside the Plyr custom player
-        if (e.target.tagName !== 'VIDEO' && e.target.tagName !== 'IMG' && !e.target.closest('.plyr')) {
+        // Close when clicking the dark backdrop (outside the modal content box)
+        if (e.target === reelModal) {
             closeReelModal();
         }
     });
