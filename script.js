@@ -288,18 +288,21 @@ function updatePortfolioFromMedia(mediaList) {
                 this.currentTime = 0.1;
             });
             
-            // Error handling - hide the whole card so no blank cards appear
+            // Error event - hide card immediately
             video.addEventListener('error', function() {
-                console.error('Video load error:', media.url);
+                console.warn('Video error (hiding card):', media.url);
                 card.style.display = 'none';
             });
             
-            // Also hide card if video stalls with no data at all
-            video.addEventListener('emptied', function() {
-                if (!this.src || this.networkState === 3) {
+            // Timeout check: if video hasn't loaded after 5 seconds, hide card
+            // This handles GitHub LFS files that serve LFS pointer text instead of video
+            setTimeout(() => {
+                // readyState 0 = HAVE_NOTHING, videoWidth 0 = no video decoded
+                if (video.readyState === 0 || video.videoWidth === 0) {
+                    console.warn('Video not loaded (hiding blank card):', media.url);
                     card.style.display = 'none';
                 }
-            });
+            }, 5000);
             
             card.appendChild(video);
         } else {
