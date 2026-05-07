@@ -245,15 +245,15 @@ function updatePortfolioFromMedia(mediaList) {
     
     // Sort videos by number in the filename
     videos.sort((a, b) => {
-        const numA = parseFloat((a.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
-        const numB = parseFloat((b.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
         return numA - numB;
     });
     
     // Sort images by number in the filename
     images.sort((a, b) => {
-        const numA = parseFloat((a.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
-        const numB = parseFloat((b.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
         return numA - numB;
     });
 
@@ -282,10 +282,17 @@ function updatePortfolioFromMedia(mediaList) {
             video.autoplay = true;
             video.loop = true;
             
-            // Generate webm and mp4 URLs from the original URL
-            const basePath = media.url.substring(0, media.url.lastIndexOf('.'));
-            const mp4Url = encodeURI(basePath + '.mp4');
-            const webmUrl = encodeURI(basePath + '.webm');
+            // Check if it's a blob/data URL or a normal file
+            let mp4Url, webmUrl;
+            if (media.url.startsWith('blob:') || media.url.startsWith('data:')) {
+                mp4Url = media.url;
+                webmUrl = media.url;
+            } else {
+                const lastDot = media.url.lastIndexOf('.');
+                const basePath = lastDot > -1 ? media.url.substring(0, lastDot) : media.url;
+                mp4Url = encodeURI(basePath + '.mp4');
+                webmUrl = encodeURI(basePath + '.webm');
+            }
             
             // Add WebM source
             const webmSource = document.createElement('source');
@@ -382,9 +389,16 @@ function openVideoModal(videoUrl) {
     const reelEmbed = document.getElementById('reelEmbed');
     
     if (reelModal && reelEmbed) {
-        const basePath = videoUrl.substring(0, videoUrl.lastIndexOf('.'));
-        const mp4Url = encodeURI(basePath + '.mp4');
-        const webmUrl = encodeURI(basePath + '.webm');
+        let mp4Url, webmUrl;
+        if (videoUrl.startsWith('blob:') || videoUrl.startsWith('data:')) {
+            mp4Url = videoUrl;
+            webmUrl = videoUrl;
+        } else {
+            const lastDot = videoUrl.lastIndexOf('.');
+            const basePath = lastDot > -1 ? videoUrl.substring(0, lastDot) : videoUrl;
+            mp4Url = encodeURI(basePath + '.mp4');
+            webmUrl = encodeURI(basePath + '.webm');
+        }
         
         reelEmbed.innerHTML = `
             <video id="plyr-player" controls autoplay muted playsinline preload="metadata"
@@ -716,8 +730,8 @@ if (closeModal) {
 
 if (reelModal) {
     reelModal.addEventListener('click', (e) => {
-        // Only ignore clicks directly on the media itself
-        if (e.target.tagName !== 'VIDEO' && e.target.tagName !== 'IMG') {
+        // Ignore clicks directly on media or inside the Plyr custom player
+        if (e.target.tagName !== 'VIDEO' && e.target.tagName !== 'IMG' && !e.target.closest('.plyr')) {
             closeReelModal();
         }
     });
