@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHOTOLOGY - Cinematic Content Agency</title>
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -263,12 +263,12 @@
         </div>
     </section>
 
-    <!-- Reel Modal -->
+    <!-- Reel Modal - Fullscreen Cinematic -->
     <div class="reel-modal" id="reelModal">
-        <div class="modal-content glass-card">
-            <span class="close-modal" id="closeModal">&times;</span>
-            <div class="reel-embed" id="reelEmbed"></div>
-        </div>
+        <button class="modal-close-btn" id="closeModal" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-media-wrap" id="reelEmbed"></div>
     </div>
 
     <!-- About Section - Editorial Style -->
@@ -470,7 +470,7 @@
         </div>
     </footer>
 
-    <script src="script.js?v=6"></script>
+    <script src="script.js?v=8"></script>
     
     <!-- Firebase Config -->
     <script src="firebase-config.js"></script>

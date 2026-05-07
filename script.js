@@ -288,10 +288,17 @@ function updatePortfolioFromMedia(mediaList) {
                 this.currentTime = 0.1;
             });
             
-            // Error handling
+            // Error handling - hide the whole card so no blank cards appear
             video.addEventListener('error', function() {
                 console.error('Video load error:', media.url);
-                this.style.display = 'none';
+                card.style.display = 'none';
+            });
+            
+            // Also hide card if video stalls with no data at all
+            video.addEventListener('emptied', function() {
+                if (!this.src || this.networkState === 3) {
+                    card.style.display = 'none';
+                }
             });
             
             card.appendChild(video);
@@ -364,8 +371,7 @@ function openVideoModal(videoUrl) {
     
     if (reelModal && reelEmbed) {
         reelEmbed.innerHTML = `
-            <video controls autoplay muted playsinline
-                   style="max-width: 90vw; max-height: 85vh; width: auto; height: auto; border-radius: 12px;">
+            <video controls autoplay muted playsinline>
                 <source src="${encodeURI(videoUrl)}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
@@ -373,25 +379,22 @@ function openVideoModal(videoUrl) {
         reelModal.classList.add('active');
         document.body.style.overflow = 'hidden';
         
-        // Autoplay the video
+        // Autoplay
         const vid = reelEmbed.querySelector('video');
-        if (vid) {
-            vid.play().catch(() => { /* user gesture required on some devices */ });
-        }
+        if (vid) vid.play().catch(() => {});
     } else {
         window.open(videoUrl, '_blank');
     }
 }
 
-// Open image in modal with original aspect ratio
+// Open image in modal
 function openImageModal(imageUrl) {
     const reelModal = document.getElementById('reelModal');
     const reelEmbed = document.getElementById('reelEmbed');
     
     if (reelModal && reelEmbed) {
         reelEmbed.innerHTML = `
-            <img src="${encodeURI(imageUrl)}" alt="Portfolio Image" 
-                 style="max-width: 90vw; max-height: 85vh; width: auto; height: auto; border-radius: 12px; object-fit: contain;">
+            <img src="${encodeURI(imageUrl)}" alt="Portfolio Image">
         `;
         reelModal.classList.add('active');
         document.body.style.overflow = 'hidden';
