@@ -249,6 +249,13 @@ function updatePortfolioFromMedia(mediaList) {
         const numB = parseFloat((b.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
         return numA - numB;
     });
+    
+    // Sort images by number in the filename
+    images.sort((a, b) => {
+        const numA = parseFloat((a.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        const numB = parseFloat((b.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        return numA - numB;
+    });
 
     // Helper to create a card
     function createCard(media, index) {
