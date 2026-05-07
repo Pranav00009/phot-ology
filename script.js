@@ -202,26 +202,49 @@ function updatePortfolio(items) {
 // Update Portfolio from Uploaded Media (Images & Videos)
 // Update Portfolio from Uploaded Media (Images & Videos) - CLEAN RENDER
 function updatePortfolioFromMedia(mediaList) {
-    const portfolioGrid = document.querySelector('.portfolio-grid');
+    const portfolioGrid = document.getElementById('portfolioGrid'); // Reels
+    const postsGrid = document.getElementById('postsGrid'); // Posts
+    
     if (!portfolioGrid) return;
     
     // Clear all existing content
     portfolioGrid.innerHTML = '';
+    if (postsGrid) postsGrid.innerHTML = '';
     
     // Check if media list is empty
     if (!mediaList || mediaList.length === 0) {
         portfolioGrid.innerHTML = `
             <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
-                <i class="fas fa-images" style="font-size: 3rem; color: var(--gold); opacity: 0.5;"></i>
-                <p style="margin-top: 1rem; color: var(--text-secondary);">No portfolio items yet</p>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Upload media from admin panel</p>
+                <i class="fas fa-video" style="font-size: 3rem; color: var(--gold); opacity: 0.5;"></i>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">No reels yet</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Upload video media from admin panel</p>
             </div>
         `;
+        if (postsGrid) {
+            postsGrid.innerHTML = `
+                <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
+                    <i class="fas fa-images" style="font-size: 3rem; color: var(--gold); opacity: 0.5;"></i>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">No posts yet</p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Upload image media from admin panel</p>
+                </div>
+            `;
+        }
         return;
     }
     
-    // Show oldest first (no reverse)
-    mediaList.forEach((media, index) => {
+    // Separate media into videos and images
+    const videos = mediaList.filter(media => media.type.startsWith('video/'));
+    const images = mediaList.filter(media => !media.type.startsWith('video/'));
+    
+    // Sort videos by number in the filename
+    videos.sort((a, b) => {
+        const numA = parseFloat((a.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        const numB = parseFloat((b.name.match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        return numA - numB;
+    });
+
+    // Helper to create a card
+    function createCard(media, index) {
         const card = document.createElement('div');
         card.className = 'portfolio-item fade-in';
         card.setAttribute('data-media-url', media.url);
@@ -272,13 +295,33 @@ function updatePortfolioFromMedia(mediaList) {
         }
         
         card.appendChild(overlay);
-        portfolioGrid.appendChild(card);
-    });
+        return card;
+    }
+
+    // Render Videos
+    if (videos.length > 0) {
+        videos.forEach((media, index) => {
+            portfolioGrid.appendChild(createCard(media, index));
+        });
+    } else {
+        portfolioGrid.innerHTML = `<div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;"><p style="color: var(--text-secondary);">No reels yet</p></div>`;
+    }
+
+    // Render Images
+    if (postsGrid) {
+        if (images.length > 0) {
+            images.forEach((media, index) => {
+                postsGrid.appendChild(createCard(media, index));
+            });
+        } else {
+            postsGrid.innerHTML = `<div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;"><p style="color: var(--text-secondary);">No posts yet</p></div>`;
+        }
+    }
     
     // Attach click listeners for media viewing
     attachMediaPortfolioListeners();
     
-    console.log('✅ Portfolio rendered:', mediaList.length, 'items (oldest first)');
+    console.log('✅ Portfolio rendered: Reels (' + videos.length + '), Posts (' + images.length + ')');
 }
 
 // Attach event listeners for media portfolio items
