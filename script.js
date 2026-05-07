@@ -8,20 +8,27 @@ async function loadDynamicContent() {
         const pricingPlans = JSON.parse(localStorage.getItem('pricing_plans')) || null;
         
         // 1. Try to load media from physical media.json (Works on GitHub Pages & Local Server)
-        let uploadedMedia = null;
+        let physicalMedia = [];
         try {
             const response = await fetch('assets/media.json?t=' + Date.now()); // cache bust
             if (response.ok) {
-                uploadedMedia = await response.json();
+                physicalMedia = await response.json();
             }
         } catch(e) { 
             console.warn('No media.json found or fetch failed'); 
         }
         
-        // 2. Fallback to localforage (IndexedDB) if media.json is not available
-        if (!uploadedMedia || uploadedMedia.length === 0) {
-            uploadedMedia = await localforage.getItem('uploaded_media') || null;
-        }
+        // 2. Load from localforage (IndexedDB - Admin panel uploads)
+        let localMedia = await localforage.getItem('uploaded_media') || [];
+        
+        // Combine both sources, avoiding duplicates by URL
+        const allMedia = [...physicalMedia, ...localMedia];
+        const uniqueUrls = new Set();
+        let uploadedMedia = allMedia.filter(m => {
+            if (uniqueUrls.has(m.url)) return false;
+            uniqueUrls.add(m.url);
+            return true;
+        });
         
         if (settings) {
             console.log('✅ Settings found:', settings);
@@ -261,7 +268,6 @@ function updatePortfolioFromMedia(mediaList) {
         // Create media element
         if (media.type.startsWith('video/')) {
             const video = document.createElement('video');
-            video.src = encodeURI(media.url);
             video.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
             video.muted = true;
             video.preload = 'metadata';
@@ -269,12 +275,32 @@ function updatePortfolioFromMedia(mediaList) {
             video.autoplay = true;
             video.loop = true;
             
+            // Generate webm and mp4 URLs from the original URL
+            const basePath = media.url.substring(0, media.url.lastIndexOf('.'));
+            const mp4Url = encodeURI(basePath + '.mp4');
+            const webmUrl = encodeURI(basePath + '.webm');
+            
+            // Add WebM source
+            const webmSource = document.createElement('source');
+            webmSource.src = webmUrl;
+            webmSource.type = 'video/webm';
+            video.appendChild(webmSource);
+            
+            // Add MP4 source
+            const mp4Source = document.createElement('source');
+            mp4Source.src = mp4Url;
+            mp4Source.type = 'video/mp4';
+            video.appendChild(mp4Source);
+            
+            // Add fallback text
+            video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+            
             // Set video to first frame
             video.addEventListener('loadedmetadata', function() {
                 this.currentTime = 0.1;
             });
             
-            // Error handling
+            // Error handling (if both sources fail, though error event behaves differently on <source>)
             video.addEventListener('error', function() {
                 console.error('Video load error:', media.url);
                 this.style.display = 'none';
@@ -349,10 +375,15 @@ function openVideoModal(videoUrl) {
     const reelEmbed = document.getElementById('reelEmbed');
     
     if (reelModal && reelEmbed) {
+        const basePath = videoUrl.substring(0, videoUrl.lastIndexOf('.'));
+        const mp4Url = encodeURI(basePath + '.mp4');
+        const webmUrl = encodeURI(basePath + '.webm');
+        
         reelEmbed.innerHTML = `
-            <video controls autoplay 
+            <video controls autoplay muted loop playsinline preload="metadata"
                    style="max-width: 90vw; max-height: 85vh; width: auto; height: auto; border-radius: 12px;">
-                <source src="${encodeURI(videoUrl)}" type="video/mp4">
+                <source src="${webmUrl}" type="video/webm">
+                <source src="${mp4Url}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         `;
