@@ -184,20 +184,7 @@ class InstagramPortfolio {
         const reelsGrid = document.getElementById('reelsGrid');
         if (!reelsGrid) return;
         
-        // Touch events for swipe
-        reelsGrid.addEventListener('touchstart', (e) => {
-            this.touchStartY = e.touches[0].clientY;
-        });
-        
-        reelsGrid.addEventListener('touchmove', (e) => {
-            this.touchEndY = e.touches[0].clientY;
-        });
-        
-        reelsGrid.addEventListener('touchend', () => {
-            this.handleSwipe();
-        });
-        
-        // Scroll event for snap detection
+        // Horizontal scroll for reels (like posts)
         let scrollTimeout;
         reelsGrid.addEventListener('scroll', () => {
             clearTimeout(scrollTimeout);
@@ -206,74 +193,37 @@ class InstagramPortfolio {
             }, 150);
         });
         
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') {
-                this.nextReel();
-            } else if (e.key === 'ArrowUp') {
-                this.previousReel();
-            }
+        // Play video on hover
+        document.querySelectorAll('.reel-item').forEach((item, index) => {
+            item.addEventListener('mouseenter', () => {
+                const video = item.querySelector('.reel-video');
+                if (video) video.play().catch(() => {});
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                const video = item.querySelector('.reel-video');
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                }
+            });
         });
-    }
-    
-    handleSwipe() {
-        const diff = this.touchStartY - this.touchEndY;
-        
-        if (Math.abs(diff) > 50) {
-            if (diff > 0) {
-                this.nextReel();
-            } else {
-                this.previousReel();
-            }
-        }
-    }
-    
-    nextReel() {
-        if (this.isTransitioning || this.currentReelIndex >= this.reels.length - 1) return;
-        
-        this.isTransitioning = true;
-        this.currentReelIndex++;
-        this.scrollToReel(this.currentReelIndex);
-        
-        setTimeout(() => {
-            this.isTransitioning = false;
-        }, 500);
-    }
-    
-    previousReel() {
-        if (this.isTransitioning || this.currentReelIndex <= 0) return;
-        
-        this.isTransitioning = true;
-        this.currentReelIndex--;
-        this.scrollToReel(this.currentReelIndex);
-        
-        setTimeout(() => {
-            this.isTransitioning = false;
-        }, 500);
-    }
-    
-    scrollToReel(index) {
-        const reelsGrid = document.getElementById('reelsGrid');
-        if (!reelsGrid) return;
-        
-        const reelItems = reelsGrid.querySelectorAll('.reel-item');
-        if (reelItems[index]) {
-            reelItems[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
-            this.playReel(index);
-        }
     }
     
     updateActiveReel() {
         const reelsGrid = document.getElementById('reelsGrid');
         if (!reelsGrid) return;
         
-        const scrollTop = reelsGrid.scrollTop;
-        const viewportHeight = window.innerHeight;
-        const newIndex = Math.round(scrollTop / viewportHeight);
+        // Find the reel closest to center
+        const scrollLeft = reelsGrid.scrollLeft;
+        const cardWidth = 320; // reel-item width
+        const gap = 24; // gap between cards
+        const newIndex = Math.round(scrollLeft / (cardWidth + gap));
         
-        if (newIndex !== this.currentReelIndex) {
+        if (newIndex !== this.currentReelIndex && newIndex < this.reels.length) {
             this.currentReelIndex = newIndex;
-            this.playReel(newIndex);
+            // Optional: auto-play centered reel
+            // this.playReel(newIndex);
         }
     }
     

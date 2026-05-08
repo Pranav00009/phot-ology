@@ -1479,23 +1479,23 @@ body::before {
 }
 
 /* ===== PREMIUM CINEMATIC VIDEO GALLERY ===== */
-/* REELS SECTION - Instagram Style 9:16 Vertical */
+/* REELS SECTION - Horizontal Scroll (Like Posts) */
 .reels-container {
     position: relative;
-    width: 100vw;
-    min-height: 100vh;
-    overflow: hidden;
+    width: 100%;
     background: #0B0B0B;
+    padding: 5rem 0;
 }
 
 .reels-grid {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    padding: 0 1rem 1rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -1506,22 +1506,39 @@ body::before {
 
 .reel-item {
     position: relative;
-    width: 100vw;
-    height: 100vh;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
+    flex-shrink: 0;
+    width: 320px;
+    height: 570px;
+    scroll-snap-align: center;
     overflow: hidden;
     background: #000;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 0 40px rgba(212, 175, 55, 0.08),
+        0 20px 60px rgba(0, 0, 0, 0.6);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.reel-item:hover {
+    transform: translateY(-8px) scale(1.02) translateZ(0);
+    box-shadow: 
+        0 0 60px rgba(212, 175, 55, 0.2),
+        0 30px 80px rgba(0, 0, 0, 0.8);
 }
 
 .reel-video {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 24px;
 }
 
 /* Cinematic gradient overlay - matching current design */
@@ -1537,14 +1554,14 @@ body::before {
     pointer-events: none;
 }
 
-/* Right side actions - Instagram style */
+/* Right side actions - Compact for horizontal cards */
 .reel-actions {
     position: absolute;
-    right: 1rem;
-    bottom: 6rem;
+    right: 0.75rem;
+    bottom: 4rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
     z-index: 10;
 }
 
@@ -1557,8 +1574,8 @@ body::before {
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1573,7 +1590,7 @@ body::before {
 }
 
 .reel-action-btn i {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: white;
 }
 
@@ -1583,31 +1600,31 @@ body::before {
 }
 
 .reel-action-count {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: white;
-    margin-top: 0.25rem;
+    margin-top: 0.125rem;
 }
 
-/* Bottom left content */
+/* Bottom left content - Compact */
 .reel-content {
     position: absolute;
-    left: 1rem;
-    bottom: 5rem;
-    right: 5rem;
+    left: 0.75rem;
+    bottom: 1rem;
+    right: 3.5rem;
     z-index: 10;
 }
 
 .reel-profile {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .reel-avatar {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
@@ -1620,15 +1637,15 @@ body::before {
 .reel-username {
     color: white;
     font-weight: 700;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
 }
 
 .reel-follow-btn {
     background: linear-gradient(135deg, var(--gold), var(--orange));
     color: #000;
-    padding: 0.25rem 1rem;
+    padding: 0.125rem 0.75rem;
     border-radius: 50px;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 700;
     border: none;
     cursor: pointer;
@@ -1636,17 +1653,43 @@ body::before {
 
 .reel-caption {
     color: white;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
+    font-size: 0.75rem;
+    margin-bottom: 0.375rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .reel-audio {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.375rem;
     color: white;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
+}
+
+/* Tablet & Desktop adjustments for reels */
+@media (min-width: 768px) {
+    .reel-item {
+        width: 380px;
+        height: 675px;
+    }
+    
+    .reels-grid {
+        padding: 0 2rem 1rem;
+        gap: 2rem;
+    }
+    
+    .reel-action-btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .reel-action-btn i {
+        font-size: 1.35rem;
+    }
 }
 
 /* POSTS SECTION - Instagram Style 4:5 Horizontal */
