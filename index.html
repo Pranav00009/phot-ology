@@ -225,39 +225,31 @@
         </div>
     </section>
 
-    <!-- Portfolio Section - Horizontal Scroll Style -->
-    <section id="portfolio" class="portfolio-section" style="padding: 5rem 0;">
-        <!-- Reels Section - Horizontal Scroll -->
-        <div id="reelsSection" class="reels-container">
-            <div class="container">
-                <div class="section-header fade-in">
-                    <span class="tag">Our Work</span>
-                    <h2 class="section-title">Reels</h2>
-                </div>
-                
-                <div id="reelsGrid" class="reels-grid">
-                    <!-- Reels will be loaded dynamically -->
-                    <div class="glass-card" style="padding: 3rem; text-align: center;">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
-                        <p style="margin-top: 1rem; color: var(--text-secondary);">Loading reels...</p>
-                    </div>
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="tag">Our Work</span>
+                <h2 class="section-title">Reels</h2>
+            </div>
+            
+            <div class="portfolio-grid" id="portfolioGrid">
+                <!-- Video items will be loaded dynamically -->
+                <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold);"></i>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Loading reels...</p>
                 </div>
             </div>
-        </div>
-        
-        <!-- Posts Section - Horizontal Scroll -->
-        <div id="postsSection" class="posts-container" style="padding: 5rem 0;">
-            <div class="container">
-                <div class="section-header fade-in">
-                    <span class="tag">Photography</span>
-                    <h2 class="section-title">Posts</h2>
-                </div>
-                
-                <div id="postsGrid" class="posts-grid">
-                    <!-- Posts will be loaded dynamically -->
-                    <div class="glass-card" style="padding: 3rem; text-align: center;">
-                        <p style="color: var(--text-secondary);">Loading posts...</p>
-                    </div>
+            
+            <div class="section-header fade-in" style="margin-top: 5rem;">
+                <span class="tag">Photography</span>
+                <h2 class="section-title">Posts</h2>
+            </div>
+            
+            <div class="portfolio-grid" id="postsGrid">
+                <!-- Image items will be loaded dynamically -->
+                <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
+                    <p style="color: var(--text-secondary);">Loading posts...</p>
                 </div>
             </div>
             
@@ -481,9 +473,6 @@
     </footer>
 
     <script src="script.js?v=10"></script>
-    
-    <!-- Instagram-Style Portfolio -->
-    <script src="instagram-portfolio.js?v=1"></script>
     
     <!-- Firebase Config -->
     <script src="firebase-config.js"></script>

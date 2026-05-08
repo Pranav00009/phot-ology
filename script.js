@@ -197,10 +197,10 @@ function updatePortfolio(items) {
 }
 
 // Update Portfolio from Uploaded Media (Images & Videos)
-// Update Portfolio from Uploaded Media (Images & Videos) - OPTIMIZED WITH PRELOADING
+// Update Portfolio from Uploaded Media (Images & Videos) - SIMPLE PROFESSIONAL
 function updatePortfolioFromMedia(mediaList) {
-    const portfolioGrid = document.getElementById('portfolioGrid'); // Reels
-    const postsGrid = document.getElementById('postsGrid'); // Posts
+    const portfolioGrid = document.getElementById('portfolioGrid'); // Reels (9:16)
+    const postsGrid = document.getElementById('postsGrid'); // Posts (4:5)
     
     if (!portfolioGrid) return;
     
@@ -214,7 +214,6 @@ function updatePortfolioFromMedia(mediaList) {
             <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
                 <i class="fas fa-video" style="font-size: 3rem; color: var(--gold); opacity: 0.5;"></i>
                 <p style="margin-top: 1rem; color: var(--text-secondary);">No reels yet</p>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Upload video media from admin panel</p>
             </div>
         `;
         if (postsGrid) {
@@ -222,7 +221,6 @@ function updatePortfolioFromMedia(mediaList) {
                 <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
                     <i class="fas fa-images" style="font-size: 3rem; color: var(--gold); opacity: 0.5;"></i>
                     <p style="margin-top: 1rem; color: var(--text-secondary);">No posts yet</p>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Upload image media from admin panel</p>
                 </div>
             `;
         }
@@ -233,21 +231,21 @@ function updatePortfolioFromMedia(mediaList) {
     const videos = mediaList.filter(media => media.type.startsWith('video/'));
     const images = mediaList.filter(media => !media.type.startsWith('video/'));
     
-    // Sort videos by number in the filename
+    // Sort videos by number
     videos.sort((a, b) => {
         const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
         const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
         return numA - numB;
     });
     
-    // Sort images by number in the filename
+    // Sort images by number
     images.sort((a, b) => {
         const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
         const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
         return numA - numB;
     });
 
-    // Helper to create a card with optimizations
+    // Helper to create a simple card
     function createCard(media, index) {
         const card = document.createElement('div');
         card.className = 'portfolio-item fade-in';
@@ -259,47 +257,27 @@ function updatePortfolioFromMedia(mediaList) {
         overlay.className = 'portfolio-overlay';
         overlay.innerHTML = `
             <i class="fas fa-${media.type.startsWith('video/') ? 'play' : 'eye'}"></i>
-            <p>${media.type.startsWith('video/') ? 'Play Video' : 'View Image'}</p>
+            <p>${media.type.startsWith('video/') ? 'View Reel' : 'View Image'}</p>
         `;
         
-        // Create media element with optimizations
+        // Create media element
         if (media.type.startsWith('video/')) {
             const video = document.createElement('video');
             video.src = encodeURI(media.url);
             video.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
             video.muted = true;
-            video.preload = 'metadata'; // Preload metadata only initially
+            video.preload = 'metadata';
             video.playsInline = true;
             video.loop = true;
             
-            // Set video to first frame on load
+            // Set to first frame
             video.addEventListener('loadedmetadata', function() {
                 this.currentTime = 0.1;
             });
             
-            // Intersection Observer for lazy loading
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        // Preload video when in viewport
-                        video.preload = 'auto';
-                        observer.unobserve(card);
-                    }
-                });
-            }, { rootMargin: '100px' });
-            
-            observer.observe(card);
-            
-            // Hover preview with requestIdleCallback
-            let hoverTimeout;
+            // Hover preview
             card.addEventListener('mouseenter', () => {
-                if (window.requestIdleCallback) {
-                    requestIdleCallback(() => {
-                        video.play().catch(() => {});
-                    });
-                } else {
-                    video.play().catch(() => {});
-                }
+                video.play().catch(() => {});
             });
             
             card.addEventListener('mouseleave', () => {
@@ -309,17 +287,9 @@ function updatePortfolioFromMedia(mediaList) {
             
             // Error handling
             video.addEventListener('error', function() {
-                console.warn('Video error (hiding card):', media.url);
+                console.warn('Video error:', media.url);
                 card.style.display = 'none';
             });
-            
-            // Timeout check for LFS files
-            setTimeout(() => {
-                if (video.readyState === 0 || video.videoWidth === 0) {
-                    console.warn('Video not loaded (hiding blank card):', media.url);
-                    card.style.display = 'none';
-                }
-            }, 5000);
             
             card.appendChild(video);
         } else {
@@ -328,7 +298,7 @@ function updatePortfolioFromMedia(mediaList) {
             img.alt = media.name || `Portfolio ${index + 1}`;
             img.loading = 'lazy';
             img.onerror = function() {
-                console.error('Image load error:', media.url);
+                console.error('Image error:', media.url);
                 this.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 600'%3E%3Crect fill='%23111' width='400' height='600'/%3E%3Ctext x='50%25' y='50%25' fill='%23D4AF37' text-anchor='middle' dy='.3em' font-family='Arial' font-size='20'%3EImage Error%3C/text%3E%3C/svg%3E`;
             };
             
@@ -339,7 +309,7 @@ function updatePortfolioFromMedia(mediaList) {
         return card;
     }
 
-    // Render Videos
+    // Render Videos (9:16 aspect ratio)
     if (videos.length > 0) {
         videos.forEach((media, index) => {
             portfolioGrid.appendChild(createCard(media, index));
@@ -348,7 +318,7 @@ function updatePortfolioFromMedia(mediaList) {
         portfolioGrid.innerHTML = `<div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;"><p style="color: var(--text-secondary);">No reels yet</p></div>`;
     }
 
-    // Render Images
+    // Render Images (4:5 aspect ratio)
     if (postsGrid) {
         if (images.length > 0) {
             images.forEach((media, index) => {
@@ -359,7 +329,7 @@ function updatePortfolioFromMedia(mediaList) {
         }
     }
     
-    // Attach click listeners for media viewing
+    // Attach click listeners
     attachMediaPortfolioListeners();
     
     console.log('✅ Portfolio rendered: Reels (' + videos.length + '), Posts (' + images.length + ')');
