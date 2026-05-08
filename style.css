@@ -232,7 +232,7 @@ body::before {
     justify-content: space-between;
     align-items: center;
     z-index: 10000;
-    pointer-events: none;
+    pointer-events: auto; /* Changed from none to auto for mobile touch */
     flex-wrap: wrap;
     gap: 0.5rem;
 }
@@ -266,6 +266,16 @@ body::before {
     pointer-events: auto;
     transition: all 0.3s ease;
     box-shadow: 0 4px 20px rgba(255, 140, 66, 0.3);
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(212, 175, 55, 0.3);
+    touch-action: manipulation; /* Improve touch response */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.status-cta:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 15px rgba(255, 140, 66, 0.4);
 }
 
 @media (min-width: 768px) {
@@ -288,6 +298,22 @@ body::before {
     .status-cta:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 25px rgba(255, 140, 66, 0.5);
+    }
+}
+
+/* Mobile-specific touch improvements */
+@media (max-width: 767px) {
+    .status-bar {
+        z-index: 10001; /* Ensure it's above other elements */
+    }
+    
+    .status-cta {
+        min-height: 44px; /* iOS minimum touch target */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 1.4rem;
+        font-size: 0.85rem;
     }
 }
 
