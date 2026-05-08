@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram-Style Reels & Posts - PHOTOLOGY</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & Framer Motion -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Preserve existing PHOTOLOGY aesthetic */
+        :root {
+            --gold: #D4AF37;
+            --orange: #FF8C42;
+            --dark-bg: #0B0B0B;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0B0B0B;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Hide scrollbar but keep functionality */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* GPU acceleration */
+        .gpu-accelerated {
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        /* Glassmorphism matching current design */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Cinematic glow matching current design */
+        .cinematic-glow {
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.15),
+                        0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+        
+        /* Smooth animations */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
+        const { motion, AnimatePresence, useAnimation } = Motion;
+        
+        // ==================== INSTAGRAM REEL COMPONENT ====================
+        const InstagramReel = ({ reel, isActive, onLike, onComment, onShare, onSave }) => {
+            const videoRef = useRef(null);
+            const [isLiked, setIsLiked] = useState(false);
+            const [showHeart, setShowHeart] = useState(false);
+            const [isMuted, setIsMuted] = useState(true);
+            
+            // Auto-play when active
+            useEffect(() => {
+                if (videoRef.current) {
+                    if (isActive) {
+                        videoRef.current.play().catch(() => {});
+                    } else {
+                        videoRef.current.pause();
+                    }
+                }
+            }, [isActive]);
+            
+            // Double tap to like
+            const handleDoubleTap = () => {
+                if (!isLiked) {
+                    setIsLiked(true);
+                    setShowHeart(true);
+                    onLike && onLike();
+                    setTimeout(() => setShowHeart(false), 1000);
+                }
+            };
+            
+            const toggleMute = () => {
+                if (videoRef.current) {
+                    videoRef.current.muted = !isMuted;
+                    setIsMuted(!isMuted);
+                }
+            };
+            
+            return (
+                <div className="relative w-screen h-screen overflow-hidden bg-black">
+                    {/* Video - 9:16 ratio */}
+                    <video
+                        ref={videoRef}
+                        src={reel.url}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loop
+                        playsInline
+                        muted={isMuted}
+                        preload="metadata"
+                        onDoubleClick={handleDoubleTap}
+                        onTouchEnd={(e) => {
+                            // Simple double tap detection
+                            const now = Date.now();
+                            const lastTap = e.currentTarget.dataset.lastTap || 0;
+                            if (now - lastTap < 300) {
+                                handleDoubleTap();
+                            }
+                            e.currentTarget.dataset.lastTap = now;
+                        }}
+                    />
+                    
+                    {/* Cinematic gradient overlay - matching current design */}
+                    <div 
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                            background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 70%)'
+                        }}
+                    />
+                    
+                    {/* Double tap heart animation */}
+                    <AnimatePresence>
+                        {showHeart && (
+                            <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1.5, opacity: 1 }}
+                                exit={{ scale: 2, opacity: 0 }}
+                                transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+                                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                            >
+                                <i className="fas fa-heart text-white text-8xl" style={{ filter: 'drop-shadow(0 0 20px rgba(212, 175, 55, 0.6))' }} />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                    
+                    {/* Right side actions - Instagram style */}
+                    <div className="absolute right-3 bottom-24 flex flex-col gap-6 z-10">
+                        {/* Like */}
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={() => {
+                                setIsLiked(!isLiked);
+                                onLike && onLike();
+                            }}
+                            className="flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 rounded-full glass-effect flex items-center justify-center">
+                                <i 
+                                    className={`${isLiked ? 'fas' : 'far'} fa-heart text-2xl`}
+                                    style={{ 
+                                        color: isLiked ? '#D4AF37' : 'white',
+                                        filter: isLiked ? 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.6))' : 'none'
+                                    }}
+                                />
+                            </div>
+                            <span className="text-white text-xs font-semibold">{reel.likes || '1.2K'}</span>
+                        </motion.button>
+                        
+                        {/* Comment */}
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={onComment}
+                            className="flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 rounded-full glass-effect flex items-center justify-center">
+                                <i className="far fa-comment text-2xl text-white" />
+                            </div>
+                            <span className="text-white text-xs font-semibold">{reel.comments || '234'}</span>
+                        </motion.button>
+                        
+                        {/* Share */}
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={onShare}
+                            className="flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 rounded-full glass-effect flex items-center justify-center">
+                                <i className="far fa-paper-plane text-2xl text-white" />
+                            </div>
+                            <span className="text-white text-xs font-semibold">{reel.shares || '89'}</span>
+                        </motion.button>
+                        
+                        {/* Save */}
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={onSave}
+                            className="flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 rounded-full glass-effect flex items-center justify-center">
+                                <i className="far fa-bookmark text-2xl text-white" />
+                            </div>
+                        </motion.button>
+                        
+                        {/* Mute toggle */}
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={toggleMute}
+                            className="flex flex-col items-center gap-1"
+                        >
+                            <div className="w-12 h-12 rounded-full glass-effect flex items-center justify-center">
+                                <i className={`fas fa-volume-${isMuted ? 'mute' : 'up'} text-xl text-white`} />
+                            </div>
+                        </motion.button>
+                    </div>
+                    
+                    {/* Bottom left content */}
+                    <div className="absolute left-4 bottom-20 right-20 z-10">
+                        {/* Username */}
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="w-10 h-10 rounded-full glass-effect flex items-center justify-center">
+                                <i className="fas fa-user text-white" />
+                            </div>
+                            <span className="text-white font-bold text-sm">@photology_.009</span>
+                            <button className="px-4 py-1 rounded-full text-xs font-bold" style={{ background: 'linear-gradient(135deg, #D4AF37, #FF8C42)', color: '#000' }}>
+                                Follow
+                            </button>
+                        </div>
+                        
+                        {/* Caption */}
+                        <p className="text-white text-sm mb-2 line-clamp-2">
+                            {reel.caption || 'Premium cinematic content 🎬✨'}
+                        </p>
+                        
+                        {/* Audio */}
+                        <div className="flex items-center gap-2">
+                            <i className="fas fa-music text-white text-xs" />
+                            <span className="text-white text-xs">Original Audio</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // ==================== REELS CONTAINER ====================
+        const ReelsContainer = ({ reels }) => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const containerRef = useRef(null);
+            const touchStartY = useRef(0);
+            const touchEndY = useRef(0);
+            
+            const handleTouchStart = (e) => {
+                touchStartY.current = e.touches[0].clientY;
+            };
+            
+            const handleTouchMove = (e) => {
+                touchEndY.current = e.touches[0].clientY;
+            };
+            
+            const handleTouchEnd = () => {
+                const diff = touchStartY.current - touchEndY.current;
+                
+                if (Math.abs(diff) > 50) { // Minimum swipe distance
+                    if (diff > 0 && currentIndex < reels.length - 1) {
+                        // Swipe up - next reel
+                        setCurrentIndex(prev => prev + 1);
+                    } else if (diff < 0 && currentIndex > 0) {
+                        // Swipe down - previous reel
+                        setCurrentIndex(prev => prev - 1);
+                    }
+                }
+            };
+            
+            // Keyboard navigation
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'ArrowDown' && currentIndex < reels.length - 1) {
+                        setCurrentIndex(prev => prev + 1);
+                    } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+                        setCurrentIndex(prev => prev - 1);
+                    }
+                };
+                
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentIndex, reels.length]);
+            
+            return (
+                <div 
+                    ref={containerRef}
+                    className="relative w-screen h-screen overflow-hidden bg-black"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentIndex}
+                            initial={{ y: '100%', opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: '-100%', opacity: 0 }}
+                            transition={{ 
+                                duration: 0.5,
+                                ease: [0.4, 0, 0.2, 1]
+                            }}
+                            className="absolute inset-0"
+                        >
+                            <InstagramReel
+                                reel={reels[currentIndex]}
+                                isActive={true}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+                    
+                    {/* Progress indicator */}
+                    <div className="absolute top-4 left-0 right-0 flex gap-1 px-4 z-20">
+                        {reels.map((_, idx) => (
+                            <div
+                                key={idx}
+                                className="flex-1 h-0.5 rounded-full overflow-hidden"
+                                style={{ background: 'rgba(255,255,255,0.3)' }}
+                            >
+                                <motion.div
+                                    initial={{ width: '0%' }}
+                                    animate={{ width: idx === currentIndex ? '100%' : idx < currentIndex ? '100%' : '0%' }}
+                                    transition={{ duration: idx === currentIndex ? 5 : 0 }}
+                                    className="h-full"
+                                    style={{ background: '#D4AF37' }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* Swipe indicator */}
+                    {currentIndex < reels.length - 1 && (
+                        <motion.div
+                            animate={{ y: [0, 10, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20"
+                        >
+                            <i className="fas fa-chevron-up text-white text-2xl opacity-50" />
+                        </motion.div>
+                    )}
+                </div>
+            );
+        };
+        
+        // ==================== INSTAGRAM POST COMPONENT ====================
+        const InstagramPost = ({ post, index }) => {
+            const [isLiked, setIsLiked] = useState(false);
+            const [isSaved, setIsSaved] = useState(false);
+            
+            return (
+                <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex-shrink-0 w-80 md:w-96"
+                >
+                    {/* Post container with 4:5 ratio */}
+                    <div className="glass-effect rounded-3xl overflow-hidden cinematic-glow">
+                        {/* Profile header */}
+                        <div className="flex items-center gap-3 p-4">
+                            <div className="w-10 h-10 rounded-full glass-effect flex items-center justify-center">
+                                <i className="fas fa-user text-white text-sm" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-white font-bold text-sm">@photology_.009</p>
+                                <p className="text-gray-400 text-xs">Surat, Gujarat</p>
+                            </div>
+                            <button className="text-white">
+                                <i className="fas fa-ellipsis-h" />
+                            </button>
+                        </div>
+                        
+                        {/* Image - 4:5 ratio */}
+                        <div className="relative" style={{ aspectRatio: '4/5' }}>
+                            <img
+                                src={post.url}
+                                alt={post.caption || 'Post'}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                            />
+                        </div>
+                        
+                        {/* Action buttons */}
+                        <div className="p-4">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-4">
+                                    <motion.button
+                                        whileTap={{ scale: 0.85 }}
+                                        onClick={() => setIsLiked(!isLiked)}
+                                    >
+                                        <i 
+                                            className={`${isLiked ? 'fas' : 'far'} fa-heart text-2xl`}
+                                            style={{ 
+                                                color: isLiked ? '#D4AF37' : 'white',
+                                                filter: isLiked ? 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.6))' : 'none'
+                                            }}
+                                        />
+                                    </motion.button>
+                                    <motion.button whileTap={{ scale: 0.85 }}>
+                                        <i className="far fa-comment text-2xl text-white" />
+                                    </motion.button>
+                                    <motion.button whileTap={{ scale: 0.85 }}>
+                                        <i className="far fa-paper-plane text-2xl text-white" />
+                                    </motion.button>
+                                </div>
+                                <motion.button
+                                    whileTap={{ scale: 0.85 }}
+                                    onClick={() => setIsSaved(!isSaved)}
+                                >
+                                    <i 
+                                        className={`${isSaved ? 'fas' : 'far'} fa-bookmark text-2xl`}
+                                        style={{ color: isSaved ? '#D4AF37' : 'white' }}
+                                    />
+                                </motion.button>
+                            </div>
+                            
+                            {/* Likes */}
+                            <p className="text-white font-bold text-sm mb-2">
+                                {post.likes || '1,234'} likes
+                            </p>
+                            
+                            {/* Caption */}
+                            <p className="text-white text-sm">
+                                <span className="font-bold">@photology_.009</span>{' '}
+                                <span className="text-gray-300">{post.caption || 'Premium content ✨'}</span>
+                            </p>
+                            
+                            {/* View comments */}
+                            <button className="text-gray-400 text-sm mt-2">
+                                View all {post.comments || '45'} comments
+                            </button>
+                            
+                            {/* Time */}
+                            <p className="text-gray-500 text-xs mt-2">2 HOURS AGO</p>
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        };
+        
+        // ==================== POSTS CONTAINER ====================
+        const PostsContainer = ({ posts }) => {
+            const scrollRef = useRef(null);
+            
+            return (
+                <div className="relative py-8">
+                    {/* Section header - matching current design */}
+                    <div className="text-center mb-8 px-4">
+                        <span className="inline-block px-4 py-2 rounded-full glass-effect text-sm font-semibold mb-4" style={{ color: '#D4AF37' }}>
+                            Photography
+                        </span>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white">Posts</h2>
+                    </div>
+                    
+                    {/* Horizontal scroll container */}
+                    <div 
+                        ref={scrollRef}
+                        className="flex gap-6 overflow-x-auto hide-scrollbar px-4 md:px-8 pb-4"
+                        style={{ scrollSnapType: 'x mandatory' }}
+                    >
+                        {posts.map((post, index) => (
+                            <div key={post.url} style={{ scrollSnapAlign: 'center' }}>
+                                <InstagramPost post={post} index={index} />
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* Scroll indicator */}
+                    <div className="flex justify-center gap-2 mt-6">
+                        {posts.map((_, idx) => (
+                            <div
+                                key={idx}
+                                className="w-2 h-2 rounded-full"
+                                style={{ background: 'rgba(212, 175, 55, 0.3)' }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+        
+        // ==================== MAIN APP ====================
+        const App = () => {
+            const [reels, setReels] = useState([]);
+            const [posts, setPosts] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [view, setView] = useState('reels'); // 'reels' or 'posts'
+            
+            useEffect(() => {
+                loadMedia();
+            }, []);
+            
+            const loadMedia = async () => {
+                try {
+                    const response = await fetch('assets/media.json?t=' + Date.now());
+                    if (response.ok) {
+                        const mediaList = await response.json();
+                        
+                        const videoList = mediaList
+                            .filter(media => media.type.startsWith('video/'))
+                            .sort((a, b) => {
+                                const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+                                const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+                                return numA - numB;
+                            });
+                        
+                        const imageList = mediaList
+                            .filter(media => !media.type.startsWith('video/'))
+                            .sort((a, b) => {
+                                const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+                                const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+                                return numA - numB;
+                            });
+                        
+                        setReels(videoList);
+                        setPosts(imageList);
+                    }
+                } catch (error) {
+                    console.error('Error loading media:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            if (loading) {
+                return (
+                    <div className="flex items-center justify-center min-h-screen bg-black">
+                        <div className="text-center">
+                            <div className="w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: '#D4AF37', borderTopColor: 'transparent' }} />
+                            <p className="text-white">Loading...</p>
+                        </div>
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="min-h-screen bg-black">
+                    {/* Navigation tabs */}
+                    <div className="fixed top-0 left-0 right-0 z-50 glass-effect">
+                        <div className="flex items-center justify-center gap-8 py-4">
+                            <button
+                                onClick={() => setView('reels')}
+                                className={`text-lg font-bold transition-all ${view === 'reels' ? 'text-white' : 'text-gray-500'}`}
+                            >
+                                <i className="fas fa-film mr-2" />
+                                Reels
+                                {view === 'reels' && (
+                                    <motion.div
+                                        layoutId="underline"
+                                        className="h-0.5 mt-1"
+                                        style={{ background: '#D4AF37' }}
+                                    />
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setView('posts')}
+                                className={`text-lg font-bold transition-all ${view === 'posts' ? 'text-white' : 'text-gray-500'}`}
+                            >
+                                <i className="fas fa-images mr-2" />
+                                Posts
+                                {view === 'posts' && (
+                                    <motion.div
+                                        layoutId="underline"
+                                        className="h-0.5 mt-1"
+                                        style={{ background: '#D4AF37' }}
+                                    />
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="pt-16">
+                        <AnimatePresence mode="wait">
+                            {view === 'reels' ? (
+                                <motion.div
+                                    key="reels"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                >
+                                    {reels.length > 0 ? (
+                                        <ReelsContainer reels={reels} />
+                                    ) : (
+                                        <div className="flex items-center justify-center h-screen">
+                                            <p className="text-gray-400">No reels available</p>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="posts"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                >
+                                    {posts.length > 0 ? (
+                                        <PostsContainer posts={posts} />
+                                    ) : (
+                                        <div className="flex items-center justify-center h-screen">
+                                            <p className="text-gray-400">No posts available</p>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Render
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
