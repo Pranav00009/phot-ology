@@ -197,7 +197,7 @@ function updatePortfolio(items) {
 }
 
 // Update Portfolio from Uploaded Media (Images & Videos)
-// Update Portfolio from Uploaded Media (Images & Videos) - CLEAN RENDER
+// Update Portfolio from Uploaded Media (Images & Videos) - OPTIMIZED WITH PRELOADING
 function updatePortfolioFromMedia(mediaList) {
     const portfolioGrid = document.getElementById('portfolioGrid'); // Reels
     const postsGrid = document.getElementById('postsGrid'); // Posts
@@ -247,7 +247,7 @@ function updatePortfolioFromMedia(mediaList) {
         return numA - numB;
     });
 
-    // Helper to create a card
+    // Helper to create a card with optimizations
     function createCard(media, index) {
         const card = document.createElement('div');
         card.className = 'portfolio-item fade-in';
@@ -262,15 +262,14 @@ function updatePortfolioFromMedia(mediaList) {
             <p>${media.type.startsWith('video/') ? 'Play Video' : 'View Image'}</p>
         `;
         
-        // Create media element - use direct src for reliable playback
+        // Create media element with optimizations
         if (media.type.startsWith('video/')) {
             const video = document.createElement('video');
             video.src = encodeURI(media.url);
             video.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
             video.muted = true;
-            video.preload = 'metadata';
+            video.preload = 'metadata'; // Preload metadata only initially
             video.playsInline = true;
-            video.autoplay = true;
             video.loop = true;
             
             // Set video to first frame on load
@@ -278,16 +277,44 @@ function updatePortfolioFromMedia(mediaList) {
                 this.currentTime = 0.1;
             });
             
-            // Error event - hide card immediately
+            // Intersection Observer for lazy loading
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Preload video when in viewport
+                        video.preload = 'auto';
+                        observer.unobserve(card);
+                    }
+                });
+            }, { rootMargin: '100px' });
+            
+            observer.observe(card);
+            
+            // Hover preview with requestIdleCallback
+            let hoverTimeout;
+            card.addEventListener('mouseenter', () => {
+                if (window.requestIdleCallback) {
+                    requestIdleCallback(() => {
+                        video.play().catch(() => {});
+                    });
+                } else {
+                    video.play().catch(() => {});
+                }
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                video.pause();
+                video.currentTime = 0.1;
+            });
+            
+            // Error handling
             video.addEventListener('error', function() {
                 console.warn('Video error (hiding card):', media.url);
                 card.style.display = 'none';
             });
             
-            // Timeout check: if video hasn't loaded after 5 seconds, hide card
-            // This handles GitHub LFS files that serve LFS pointer text instead of video
+            // Timeout check for LFS files
             setTimeout(() => {
-                // readyState 0 = HAVE_NOTHING, videoWidth 0 = no video decoded
                 if (video.readyState === 0 || video.videoWidth === 0) {
                     console.warn('Video not loaded (hiding blank card):', media.url);
                     card.style.display = 'none';
@@ -357,24 +384,48 @@ function attachMediaPortfolioListeners() {
     });
 }
 
-// Open video in modal - simple native player (reliable)
+// Open video in modal - optimized with instant playback
 function openVideoModal(videoUrl) {
     const reelModal = document.getElementById('reelModal');
     const reelEmbed = document.getElementById('reelEmbed');
     
     if (reelModal && reelEmbed) {
-        reelEmbed.innerHTML = `
-            <video controls autoplay muted playsinline>
-                <source src="${encodeURI(videoUrl)}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        `;
+        // Create video element with optimizations
+        const videoElement = document.createElement('video');
+        videoElement.controls = true;
+        videoElement.autoplay = true;
+        videoElement.playsInline = true;
+        videoElement.preload = 'auto';
+        videoElement.muted = false; // Start unmuted for modal
+        videoElement.style.cssText = 'width: 100%; height: auto; max-height: calc(100vh - 8rem); object-fit: contain; background: #000; border-radius: 20px;';
+        
+        // Add source
+        const source = document.createElement('source');
+        source.src = encodeURI(videoUrl);
+        source.type = 'video/mp4';
+        videoElement.appendChild(source);
+        
+        // Fallback text
+        videoElement.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+        
+        // Clear and add video
+        reelEmbed.innerHTML = '';
+        reelEmbed.appendChild(videoElement);
+        
+        // Show modal with animation
         reelModal.classList.add('active');
         document.body.style.overflow = 'hidden';
         
-        // Autoplay
-        const vid = reelEmbed.querySelector('video');
-        if (vid) vid.play().catch(() => {});
+        // Preload and play
+        videoElement.load();
+        const playPromise = videoElement.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+                console.log('Autoplay prevented:', error);
+                // If autoplay fails, user will need to click play
+            });
+        }
     } else {
         window.open(videoUrl, '_blank');
     }
