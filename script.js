@@ -354,20 +354,30 @@ function attachMediaPortfolioListeners() {
     });
 }
 
-// Open video in modal - optimized with instant playback
+// Open video in modal - optimized with portrait mode support
 function openVideoModal(videoUrl) {
     const reelModal = document.getElementById('reelModal');
     const reelEmbed = document.getElementById('reelEmbed');
     
     if (reelModal && reelEmbed) {
-        // Create video element with optimizations
+        // Create video element with portrait support
         const videoElement = document.createElement('video');
         videoElement.controls = true;
         videoElement.autoplay = true;
         videoElement.playsInline = true;
         videoElement.preload = 'auto';
-        videoElement.muted = false; // Start unmuted for modal
-        videoElement.style.cssText = 'width: 100%; height: auto; max-height: calc(100vh - 8rem); object-fit: contain; background: #000; border-radius: 20px;';
+        videoElement.muted = false;
+        
+        // Style for portrait mode (no forced width/height)
+        videoElement.style.cssText = `
+            max-width: 90vw;
+            max-height: 85vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            background: #000;
+            border-radius: 20px;
+        `;
         
         // Add source
         const source = document.createElement('source');
@@ -386,6 +396,9 @@ function openVideoModal(videoUrl) {
         reelModal.classList.add('active');
         document.body.style.overflow = 'hidden';
         
+        // Add to browser history for back button support
+        history.pushState({ modalOpen: true }, '');
+        
         // Preload and play
         videoElement.load();
         const playPromise = videoElement.play();
@@ -393,7 +406,6 @@ function openVideoModal(videoUrl) {
         if (playPromise !== undefined) {
             playPromise.catch((error) => {
                 console.log('Autoplay prevented:', error);
-                // If autoplay fails, user will need to click play
             });
         }
     } else {
@@ -707,10 +719,35 @@ if (reelModal) {
 }
 
 function closeReelModal() {
-    reelModal.classList.remove('active');
-    reelEmbed.innerHTML = '';
+    const reelModal = document.getElementById('reelModal');
+    const reelEmbed = document.getElementById('reelEmbed');
+    
+    if (reelModal) {
+        reelModal.classList.remove('active');
+    }
+    if (reelEmbed) {
+        reelEmbed.innerHTML = '';
+    }
     document.body.style.overflow = 'auto';
+    
+    // Remove from history if modal was opened
+    if (history.state && history.state.modalOpen) {
+        history.back();
+    }
 }
+
+// Browser back button handler
+window.addEventListener('popstate', (event) => {
+    const reelModal = document.getElementById('reelModal');
+    if (reelModal && reelModal.classList.contains('active')) {
+        reelModal.classList.remove('active');
+        const reelEmbed = document.getElementById('reelEmbed');
+        if (reelEmbed) {
+            reelEmbed.innerHTML = '';
+        }
+        document.body.style.overflow = 'auto';
+    }
+});
 
 // Extract reel ID from Instagram URL
 function extractReelId(url) {
