@@ -2161,7 +2161,7 @@ body::before {
     font-size: 1.75rem;
     font-weight: 800;
     font-family: 'Poppins', sans-serif;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     color: var(--text-primary);
     background: linear-gradient(135deg, var(--gold), var(--orange));
     -webkit-background-clip: text;
@@ -2171,11 +2171,26 @@ body::before {
     position: relative;
 }
 
+/* Pricing Price Display */
+.pricing-price {
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-family: 'Poppins', sans-serif;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
 /* Featured card title - extra emphasis */
 .pricing-card.featured .pricing-title {
     font-size: 1.9rem;
     text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-    margin-bottom: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.pricing-card.featured .pricing-price {
+    font-size: 2.75rem;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
 }
 
 /* Features List - Better Hierarchy */
@@ -2187,15 +2202,24 @@ body::before {
 }
 
 .pricing-features li {
-    padding: 1rem 0;
+    padding: 0.85rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     color: #BFBFBF;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    font-size: 0.95rem;
+    gap: 0.75rem;
+    font-size: 0.9rem;
     line-height: 1.5;
     transition: all 0.3s ease;
+}
+
+.pricing-features li strong {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.pricing-features li i.fa-times-circle {
+    color: rgba(255, 107, 53, 0.6);
 }
 
 .pricing-features li:last-child {
