@@ -1026,3 +1026,212 @@ async function autoAddProjectFiles() {
     // Update portfolio display
     updatePortfolioFromMedia(mediaList);
 }
+
+
+// ===== CATEGORY FILTER DROPDOWN =====
+let currentCategory = 'Social Media Reels'; // Default category
+let allMediaData = []; // Store all media
+
+// Category dropdown toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const categoryBtn = document.getElementById('categoryBtn');
+    const categoryMenu = document.getElementById('categoryMenu');
+    const categoryDropdown = categoryBtn?.parentElement;
+    const categoryOptions = document.querySelectorAll('.category-option');
+    
+    if (categoryBtn && categoryMenu) {
+        // Toggle dropdown
+        categoryBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            categoryDropdown.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!categoryDropdown.contains(e.target)) {
+                categoryDropdown.classList.remove('active');
+            }
+        });
+        
+        // Handle category selection
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const selectedCategory = option.getAttribute('data-category');
+                
+                // Update active state
+                categoryOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                // Update button text
+                document.getElementById('selectedCategory').textContent = 
+                    option.querySelector('span').textContent;
+                
+                // Close dropdown
+                categoryDropdown.classList.remove('active');
+                
+                // Filter videos
+                currentCategory = selectedCategory;
+                filterVideosByCategory(selectedCategory);
+            });
+        });
+    }
+});
+
+// Filter videos by category
+function filterVideosByCategory(category) {
+    if (!allMediaData || allMediaData.length === 0) return;
+    
+    // Filter videos by category
+    const filteredVideos = allMediaData.filter(media => 
+        media.type.startsWith('video/') && media.category === category
+    );
+    
+    // Re-render portfolio with filtered videos
+    renderFilteredPortfolio(filteredVideos);
+}
+
+// Render filtered portfolio
+function renderFilteredPortfolio(videos) {
+    const portfolioGrid = document.getElementById('portfolioGrid');
+    if (!portfolioGrid) return;
+    
+    portfolioGrid.innerHTML = '';
+    
+    if (videos.length === 0) {
+        portfolioGrid.innerHTML = `
+            <div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;">
+                <i class="fas fa-video" style="font-size: 3rem; color: var(--gold); opacity: 0.5;"></i>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">No videos in this category</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Sort by number
+    videos.sort((a, b) => {
+        const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+        return numA - numB;
+    });
+    
+    // Create cards
+    videos.forEach((media, index) => {
+        const card = document.createElement('div');
+        card.className = 'portfolio-item fade-in';
+        card.setAttribute('data-media-url', media.url);
+        card.setAttribute('data-is-video', 'true');
+        
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'portfolio-overlay';
+        overlay.innerHTML = `
+            <i class="fas fa-play"></i>
+            <p>View Reel</p>
+        `;
+        
+        // Create video element
+        const video = document.createElement('video');
+        video.src = encodeURI(media.url);
+        video.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+        video.muted = true;
+        video.preload = 'metadata';
+        video.playsInline = true;
+        video.loop = true;
+        
+        // Set to first frame
+        video.addEventListener('loadedmetadata', function() {
+            this.currentTime = 0.1;
+        });
+        
+        // Hover preview
+        card.addEventListener('mouseenter', () => {
+            video.play().catch(() => {});
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            video.pause();
+            video.currentTime = 0.1;
+        });
+        
+        // Error handling
+        video.addEventListener('error', function() {
+            console.warn('Video error:', media.url);
+            card.style.display = 'none';
+        });
+        
+        card.appendChild(video);
+        card.appendChild(overlay);
+        portfolioGrid.appendChild(card);
+        
+        // Add click listener
+        card.addEventListener('click', () => {
+            openVideoModal(media.url);
+        });
+    });
+    
+    // Trigger fade-in animation
+    setTimeout(() => {
+        portfolioGrid.querySelectorAll('.fade-in').forEach(el => {
+            el.classList.add('visible');
+        });
+    }, 50);
+}
+
+// Override the updatePortfolioFromMedia function to store all media
+const originalUpdatePortfolioFromMedia = window.updatePortfolioFromMedia || updatePortfolioFromMedia;
+
+function updatePortfolioFromMedia(mediaList) {
+    // Store all media data
+    allMediaData = mediaList;
+    
+    // Filter by default category (Social Media Reels)
+    if (mediaList && mediaList.length > 0) {
+        const defaultVideos = mediaList.filter(media => 
+            media.type.startsWith('video/') && media.category === currentCategory
+        );
+        renderFilteredPortfolio(defaultVideos);
+        
+        // Still render posts section (images)
+        const postsGrid = document.getElementById('postsGrid');
+        if (postsGrid) {
+            const images = mediaList.filter(media => !media.type.startsWith('video/'));
+            
+            if (images.length > 0) {
+                postsGrid.innerHTML = '';
+                images.sort((a, b) => {
+                    const numA = parseFloat(((a.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+                    const numB = parseFloat(((b.name || '').match(/\d+(\.\d+)?/) || [Infinity])[0]);
+                    return numA - numB;
+                });
+                
+                images.forEach((media, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'portfolio-item fade-in';
+                    card.setAttribute('data-media-url', media.url);
+                    card.setAttribute('data-is-video', 'false');
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'portfolio-overlay';
+                    overlay.innerHTML = `<i class="fas fa-eye"></i><p>View Image</p>`;
+                    
+                    const img = document.createElement('img');
+                    img.src = encodeURI(media.url);
+                    img.alt = media.name || `Post ${index + 1}`;
+                    img.loading = 'lazy';
+                    
+                    card.appendChild(img);
+                    card.appendChild(overlay);
+                    postsGrid.appendChild(card);
+                    
+                    card.addEventListener('click', () => {
+                        openImageModal(media.url);
+                    });
+                });
+            } else {
+                postsGrid.innerHTML = `<div class="glass-card" style="padding: 3rem; text-align: center; grid-column: 1 / -1;"><p style="color: var(--text-secondary);">No posts yet</p></div>`;
+            }
+        }
+    }
+    
+    console.log('✅ Category-based portfolio rendered: ' + currentCategory);
+}

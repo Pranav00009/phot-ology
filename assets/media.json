@@ -1,114 +1,250 @@
 [
   {
     "name": "1.mp4",
-    "url": "assets/videos/1.mp4",
+    "url": "assets/videos/Social Media Reels/1.mp4",
     "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786651,
     "isProjectFile": true
   },
   {
     "name": "2.mp4",
-    "url": "assets/videos/2.mp4",
+    "url": "assets/videos/Social Media Reels/2.mp4",
     "type": "video/mp4",
-    "timestamp": 1778179786647,
-    "isProjectFile": true
-  },
-  {
-    "name": "3.mp4",
-    "url": "assets/videos/3.mp4",
-    "type": "video/mp4",
-    "timestamp": 1778179786646,
-    "isProjectFile": true
-  },
-  {
-    "name": "4.mp4",
-    "url": "assets/videos/4.mp4",
-    "type": "video/mp4",
-    "timestamp": 1778179786645,
-    "isProjectFile": true
-  },
-  {
-    "name": "5.mp4",
-    "url": "assets/videos/5.mp4",
-    "type": "video/mp4",
-    "timestamp": 1778179786644,
-    "isProjectFile": true
-  },
-  {
-    "name": "6.mp4",
-    "url": "assets/videos/6.mp4",
-    "type": "video/mp4",
-    "timestamp": 1778179786643,
-    "isProjectFile": true
-  },
-  {
-    "name": "7.mp4",
-    "url": "assets/videos/7.mp4",
-    "type": "video/mp4",
-    "timestamp": 1778179786642,
-    "isProjectFile": true
-  },
-  {
-    "name": "8.mp4",
-    "url": "assets/videos/8.mp4",
-    "type": "video/mp4",
-    "timestamp": 1778179786641,
-    "isProjectFile": true
-  },
-  {
-    "name": "9.mp4",
-    "url": "assets/videos/9.mp4",
-    "type": "video/mp4",
-    "timestamp": 1778179786640,
-    "isProjectFile": true
-  },
-  {
-    "name": "10.mp4",
-    "url": "assets/videos/10.mp4",
-    "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786650,
     "isProjectFile": true
   },
   {
-    "name": "11.mp4",
-    "url": "assets/videos/11.mp4",
+    "name": "3.mp4",
+    "url": "assets/videos/Social Media Reels/3.mp4",
     "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786649,
     "isProjectFile": true
   },
   {
-    "name": "12.mp4",
-    "url": "assets/videos/12.mp4",
+    "name": "4.mp4",
+    "url": "assets/videos/Social Media Reels/4.mp4",
     "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786648,
     "isProjectFile": true
   },
   {
-    "name": "13.mp4",
-    "url": "assets/videos/13.mp4",
+    "name": "5.mp4",
+    "url": "assets/videos/Social Media Reels/5.mp4",
     "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786647,
     "isProjectFile": true
   },
   {
-    "name": "14.mp4",
-    "url": "assets/videos/14.mp4",
+    "name": "6.mp4",
+    "url": "assets/videos/Social Media Reels/6.mp4",
     "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786646,
     "isProjectFile": true
   },
   {
-    "name": "15.mp4",
-    "url": "assets/videos/15.mp4",
+    "name": "7.mp4",
+    "url": "assets/videos/Social Media Reels/7.mp4",
     "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786645,
     "isProjectFile": true
   },
   {
-    "name": "16.mp4",
-    "url": "assets/videos/16.mp4",
+    "name": "8.mp4",
+    "url": "assets/videos/Social Media Reels/8.mp4",
     "type": "video/mp4",
+    "category": "Social Media Reels",
     "timestamp": 1778179786644,
+    "isProjectFile": true
+  },
+  {
+    "name": "9.mp4",
+    "url": "assets/videos/Social Media Reels/9.mp4",
+    "type": "video/mp4",
+    "category": "Social Media Reels",
+    "timestamp": 1778179786643,
+    "isProjectFile": true
+  },
+  {
+    "name": "10.mp4",
+    "url": "assets/videos/Social Media Reels/10.mp4",
+    "type": "video/mp4",
+    "category": "Social Media Reels",
+    "timestamp": 1778179786642,
+    "isProjectFile": true
+  },
+  {
+    "name": "11.mp4",
+    "url": "assets/videos/Social Media Reels/11.mp4",
+    "type": "video/mp4",
+    "category": "Social Media Reels",
+    "timestamp": 1778179786641,
+    "isProjectFile": true
+  },
+  {
+    "name": "12.mp4",
+    "url": "assets/videos/Social Media Reels/12.mp4",
+    "type": "video/mp4",
+    "category": "Social Media Reels",
+    "timestamp": 1778179786640,
+    "isProjectFile": true
+  },
+  {
+    "name": "1.mp4",
+    "url": "assets/videos/Cinematic Reels/1.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786639,
+    "isProjectFile": true
+  },
+  {
+    "name": "2.mp4",
+    "url": "assets/videos/Cinematic Reels/2.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786638,
+    "isProjectFile": true
+  },
+  {
+    "name": "3.mp4",
+    "url": "assets/videos/Cinematic Reels/3.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786637,
+    "isProjectFile": true
+  },
+  {
+    "name": "4.mp4",
+    "url": "assets/videos/Cinematic Reels/4.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786636,
+    "isProjectFile": true
+  },
+  {
+    "name": "5.mp4",
+    "url": "assets/videos/Cinematic Reels/5.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786635,
+    "isProjectFile": true
+  },
+  {
+    "name": "6.mp4",
+    "url": "assets/videos/Cinematic Reels/6.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786634,
+    "isProjectFile": true
+  },
+  {
+    "name": "7.mp4",
+    "url": "assets/videos/Cinematic Reels/7.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786633,
+    "isProjectFile": true
+  },
+  {
+    "name": "8.mp4",
+    "url": "assets/videos/Cinematic Reels/8.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786632,
+    "isProjectFile": true
+  },
+  {
+    "name": "9.mp4",
+    "url": "assets/videos/Cinematic Reels/9.mp4",
+    "type": "video/mp4",
+    "category": "Cinematic Reels",
+    "timestamp": 1778179786631,
+    "isProjectFile": true
+  },
+  {
+    "name": "1.mp4",
+    "url": "assets/videos/ugc reel/1.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786630,
+    "isProjectFile": true
+  },
+  {
+    "name": "2.mp4",
+    "url": "assets/videos/ugc reel/2.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786629,
+    "isProjectFile": true
+  },
+  {
+    "name": "3.mp4",
+    "url": "assets/videos/ugc reel/3.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786628,
+    "isProjectFile": true
+  },
+  {
+    "name": "4.mp4",
+    "url": "assets/videos/ugc reel/4.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786627,
+    "isProjectFile": true
+  },
+  {
+    "name": "5.mp4",
+    "url": "assets/videos/ugc reel/5.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786626,
+    "isProjectFile": true
+  },
+  {
+    "name": "6.mp4",
+    "url": "assets/videos/ugc reel/6.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786625,
+    "isProjectFile": true
+  },
+  {
+    "name": "7.mp4",
+    "url": "assets/videos/ugc reel/7.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786624,
+    "isProjectFile": true
+  },
+  {
+    "name": "8.mp4",
+    "url": "assets/videos/ugc reel/8.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786623,
+    "isProjectFile": true
+  },
+  {
+    "name": "9.mp4",
+    "url": "assets/videos/ugc reel/9.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786622,
+    "isProjectFile": true
+  },
+  {
+    "name": "10.mp4",
+    "url": "assets/videos/ugc reel/10.mp4",
+    "type": "video/mp4",
+    "category": "ugc reel",
+    "timestamp": 1778179786621,
     "isProjectFile": true
   },
   {
